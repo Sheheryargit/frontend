@@ -1,0 +1,510 @@
+/* ============================================================================
+   App shell — sidebar, header, main, footer.
+   Light-first: the rail is a sunken paper surface, not a dark slab. The dark
+   rail in the old build was a default, not a decision.
+   ========================================================================== */
+
+.studio {
+  display: grid;
+  grid-template-columns: var(--w-sidebar) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--surface-app);
+}
+
+/* ---- sidebar ----------------------------------------------------------- */
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 14px 10px 10px;
+  border-right: 1px solid var(--line);
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.logo-row {
+  display: flex; align-items: center; gap: 9px;
+  height: var(--ctl-lg);
+  padding: 0 6px;
+  margin-bottom: 14px;
+}
+.spark-logo {
+  display: grid; place-items: center;
+  width: 25px; height: 25px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--surface-app);
+}
+.spark-logo svg { width: 14px; height: 14px; }
+.logo-row > strong {
+  display: flex; flex-direction: column;
+  font-size: 0.8125rem; font-weight: 600; letter-spacing: -0.006em; line-height: 1.2;
+}
+.logo-row > strong > span {
+  font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+
+/* The agent's own state, in the chrome. The product is agentic; the shell
+   should say what the agent is doing without the user hunting for it. */
+.agent-state {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 9px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-card);
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.agent-state strong {
+  display: block; font-size: 0.75rem; font-weight: 600; color: var(--ink);
+  letter-spacing: -0.002em;
+}
+.agent-state small { color: var(--ink-dim); font-size: 0.6875rem; }
+.agent-pulse {
+  position: relative; flex: none;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ok-solid);
+}
+.agent-pulse[data-busy="true"] { background: var(--a-4); }
+.agent-pulse[data-busy="true"]::after {
+  content: ""; position: absolute; inset: -3px;
+  border-radius: 50%; border: 1px solid var(--a-4);
+  animation: agent-ring 1.5s var(--ease-linear) infinite;
+}
+@keyframes agent-ring {
+  from { opacity: 0.8; transform: scale(0.7); }
+  to   { opacity: 0;   transform: scale(1.5); }
+}
+
+.workspace-search {
+  justify-content: flex-start !important;
+  width: 100%;
+  margin-bottom: 16px;
+  color: var(--ink-dim) !important;
+}
+.workspace-search > span { flex: 1; text-align: left; font-weight: 450; }
+.workspace-search kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--n-2);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--ink-dim);
+}
+
+.nav-label {
+  padding: 0 7px;
+  margin-bottom: 5px;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.app-sidebar nav { display: flex; flex-direction: column; gap: 1px; }
+
+.nav-link {
+  position: relative;
+  display: flex; align-items: center; gap: 9px;
+  height: var(--ctl-lg);
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink-muted);
+  font-size: 0.8125rem; font-weight: 500; text-align: left;
+  transition: background-color var(--d-2) var(--ease), color var(--d-2) var(--ease);
+}
+.nav-link:not(:hover) { transition-duration: 0ms; }
+.nav-link > svg { width: 16px; height: 16px; color: var(--ink-dim); }
+.nav-link > span { flex: 1; }
+.nav-link:hover:not(:disabled) { background: var(--n-3); color: var(--ink); }
+.nav-link.active { background: var(--surface-card); color: var(--ink); box-shadow: var(--elev-0); font-weight: 550; }
+.nav-link.active > svg { color: var(--a-4); }
+/* the only accent marker in the rail */
+.nav-link.active::before {
+  content: ""; position: absolute; left: -10px; top: 50%;
+  width: 2px; height: 16px; margin-top: -8px;
+  border-radius: 0 2px 2px 0; background: var(--a-4);
+}
+.nav-link:disabled { color: var(--n-8); }
+.nav-link:disabled > svg { color: var(--n-8); }
+.nav-active-dot { display: none; }
+
+/* the workflow, as a sequence rather than three disconnected words */
+.sidebar-project { margin-top: 18px; }
+.project-name {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 9px;
+  border-radius: var(--r-md);
+  background: var(--n-3);
+}
+.project-symbol {
+  flex: none; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ink-dim);
+}
+.project-name strong { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: -0.003em; }
+.project-name small { font-size: 0.6875rem; color: var(--ink-dim); }
+
+.project-timeline {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 10px; padding-left: 10px;
+}
+.project-timeline > span {
+  position: relative;
+  padding: 5px 0 5px 16px;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+}
+.project-timeline > span::before {
+  content: ""; position: absolute; left: 0; top: 11px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--surface-sunken);
+  box-shadow: 0 0 0 1.5px var(--line-strong);
+  transition: background-color var(--d-4) var(--ease), box-shadow var(--d-4) var(--ease);
+}
+/* the connecting line is what makes it a sequence */
+.project-timeline > span:not(:last-child)::after {
+  content: ""; position: absolute; left: 3px; top: 18px;
+  width: 1px; height: calc(100% - 7px);
+  background: var(--line);
+}
+.project-timeline > span.done { color: var(--ink); font-weight: 500; }
+.project-timeline > span.done::before { background: var(--ok-solid); box-shadow: 0 0 0 1.5px var(--ok-solid); }
+
+.sidebar-footer { margin-top: auto; display: flex; flex-direction: column; gap: 1px; }
+.sidebar-footer > button {
+  display: flex; align-items: center; gap: 9px;
+  height: var(--ctl-md);
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink-muted);
+  font-size: 0.75rem; text-align: left;
+}
+.sidebar-footer > button > span:first-of-type { flex: 1; }
+.sidebar-footer > button > svg { width: 15px; height: 15px; color: var(--ink-dim); }
+.sidebar-footer > button:hover { background: var(--n-3); color: var(--ink); }
+
+.mini-switch {
+  flex: none; width: 22px; height: 13px;
+  border-radius: var(--r-full);
+  background: var(--n-5);
+  transition: background-color var(--d-2) var(--ease);
+}
+.mini-switch::after {
+  content: ""; display: block;
+  width: 9px; height: 9px; margin: 2px;
+  border-radius: 50%; background: var(--surface-card);
+  transition: transform var(--d-3) var(--ease);
+}
+.mini-switch.on { background: var(--a-4); }
+.mini-switch.on::after { transform: translateX(9px); }
+
+.sidebar-bottom-rule { height: 1px; margin: 8px 0; background: var(--line); }
+
+.profile { display: flex; align-items: center; gap: 8px; padding: 2px 8px 4px; }
+.profile > span:first-child {
+  display: grid; place-items: center;
+  width: 24px; height: 24px;
+  border-radius: var(--r-full);
+  background: var(--n-4);
+  font-size: 0.625rem; font-weight: 600; color: var(--ink-muted);
+}
+.profile strong { display: block; font-size: 0.75rem; font-weight: 550; }
+.profile small { font-size: 0.6875rem; color: var(--ink-dim); }
+
+/* ---- main column ------------------------------------------------------- */
+.app-main { display: flex; flex-direction: column; min-width: 0; }
+
+.app-header {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  height: var(--h-header);
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: oklch(from var(--surface-app) l c h / 0.86);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+/* The old breadcrumb always read "Campaigns > one thing", which is
+   decoration pretending to be navigation. This is the campaign's identity. */
+.breadcrumbs { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.breadcrumbs > strong {
+  font-size: 0.875rem; font-weight: 600; letter-spacing: -0.008em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.header-actions { display: flex; align-items: center; gap: 7px; }
+.simulation-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding-right: 4px;
+  font-size: 0.6875rem; font-weight: 550; color: var(--ink-dim);
+}
+.simulation-label > span {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--warn-solid);
+}
+
+/* Screen header: was eyebrow + h1 + sub-copy + 2 buttons, ~120px on every
+   screen, repeating what the rail already said. Now one line that earns it. */
+.screen-header {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+  padding: 26px 24px 18px;
+  max-width: var(--w-content);
+}
+.screen-label { display: none; }
+.screen-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; width: 100%; }
+.screen-title-row h1 {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 400; line-height: 1.08;
+  letter-spacing: -0.014em;
+}
+.screen-title-row > div:first-child > p {
+  margin-top: 4px;
+  max-width: 62ch;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+.screen-title-actions { display: flex; align-items: center; gap: 7px; flex: none; }
+
+.app-main > main { padding: 0 24px 28px; max-width: var(--w-content); }
+
+.workspace-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: auto;
+  padding: 12px 24px;
+  border-top: 1px solid var(--line);
+  font-size: 0.6875rem;
+  color: var(--ink-dim);
+}
+.workspace-footer > span, .workspace-footer > div { display: flex; align-items: center; gap: 10px; }
+.simulation-options {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--ctl-xs); padding: 0 7px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface-card);
+  font-size: 0.6875rem; color: var(--ink-muted);
+}
+.simulation-options:hover { background: var(--n-2); }
+
+/* ---- toast ------------------------------------------------------------- */
+.toast {
+  position: fixed; bottom: 16px; left: 50%;
+  z-index: 60;
+  display: flex; align-items: center; gap: 9px;
+  width: max-content; max-width: 360px;
+  margin-left: -180px;
+  padding: 10px 10px 10px 13px;
+  border-radius: var(--r-md);
+  background: var(--n-12);
+  color: var(--n-1);
+  font-size: 0.8125rem;
+  box-shadow: var(--elev-4);
+}
+.toast > svg { color: var(--ok-solid); }
+.toast > button {
+  display: grid; place-items: center;
+  width: 20px; height: 20px;
+  border: none; border-radius: var(--r-xs);
+  background: oklch(1 0 0 / 0.1);
+  color: inherit;
+}
+.toast > button:hover { background: oklch(1 0 0 / 0.18); }
+
+/* ---- command palette --------------------------------------------------- */
+.command-dialog { padding: 0 !important; width: 640px; max-width: calc(100vw - 32px); box-shadow: var(--elev-5) !important; }
+.command-input {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line);
+}
+.command-input > svg { color: var(--ink-dim); }
+.command-input [data-slot="input"] {
+  border: none !important; background: none !important; box-shadow: none !important;
+  padding: 0; font-size: 0.9375rem;
+}
+.command-input kbd {
+  padding: 2px 6px; border: 1px solid var(--line); border-radius: var(--r-xs);
+  background: var(--n-2); font-family: var(--font-mono); font-size: 0.625rem; color: var(--ink-dim);
+}
+.command-list { max-height: min(420px, 55vh); overflow-y: auto; padding: 6px; overscroll-behavior: contain; }
+.command-list > button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  height: var(--ctl-lg); padding: 0 9px;
+  border: none; border-radius: var(--r-sm);
+  background: none; color: var(--ink);
+  font-size: 0.8125rem; text-align: left;
+}
+.command-list > button > span { flex: 1; }
+.command-list > button > svg:first-child { color: var(--ink-dim); width: 15px; height: 15px; }
+.command-list > button > svg:last-child { color: var(--n-8); width: 14px; height: 14px; opacity: 0; }
+.command-list > button:hover, .command-list > button:focus-visible {
+  background: var(--a-1); color: var(--a-6); box-shadow: none;
+}
+.command-list > button:hover > svg, .command-list > button:focus-visible > svg { color: var(--a-4); opacity: 1; }
+.command-footer {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 15px;
+  border-top: 1px solid var(--line);
+  font-size: 0.6875rem; color: var(--ink-dim);
+}
+
+@media (max-width: 1040px) {
+  .studio { grid-template-columns: var(--w-sidebar-collapsed) minmax(0, 1fr); }
+  .app-sidebar { padding: 14px 8px 10px; }
+  .logo-row > strong, .workspace-search > span, .workspace-search kbd,
+  .nav-label, .sidebar-project, .nav-link > span, .agent-state > div,
+  .sidebar-footer > button > span, .profile > div, .profile > [data-slot="dropdown-menu-trigger"] { display: none; }
+  .nav-link, .sidebar-footer > button, .workspace-search { justify-content: center !important; padding: 0; }
+  .agent-state { justify-content: center; padding: 8px 0; }
+}
+@media (max-width: 720px) {
+  .app-header, .screen-header, .app-main > main, .workspace-footer { padding-left: 16px; padding-right: 16px; }
+  .screen-title-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .screen-title-row h1 { font-size: 1.625rem; }
+}
+
+/* The old rail was dark, so its text was authored white. On paper it vanished. */
+.logo-row > strong,
+.project-name strong,
+.profile strong,
+.workspace-label strong { color: var(--ink); }
+.logo-row > strong > span,
+.project-name small,
+.profile small { color: var(--ink-dim); }
+.sidebar-project .nav-label { color: var(--ink-dim); }
+
+/* On the landing the hero is the header; the screen header repeated it. */
+.app-main:has(.front) .screen-header { display: none; }
+.app-main:has(.front) > main { padding-top: 0; }
+
+/* ============================================================================
+   Un-double the layout.
+
+   The old build positioned the sidebar `fixed` and pushed the content with
+   `margin-left: var(--sidebar-width)`. The shell is a grid now, which already
+   reserves a sidebar column — so the space was being allocated twice, leaving
+   a ~220px dead gutter between the rail and the content. These neutralise the
+   legacy layout; they go when legacy.css does.
+   ========================================================================== */
+.app-sidebar {
+  position: sticky;
+  top: 0; left: auto; bottom: auto;
+  width: auto;
+  z-index: 5;
+  transition: none;
+}
+.app-main { margin-left: 0; }
+.app-main > main { margin: 0; min-height: 0; }
+.app-header { height: var(--h-header); padding: 0 24px; z-index: 20; }
+.workspace-footer { max-width: none; margin: 0; }
+.screen-header { margin: 0; }
+
+/* the rail is its own material: a violet-leaning tint, distinct from the
+   canvas it sits beside, so the two surfaces read as different planes */
+.app-sidebar { background: var(--tint-rail); }
+.app-header  { background: oklch(from var(--surface-app) l c h / 0.82); }
+
+/* ---- the decisioning run ------------------------------------------------
+   Five stages that used to read as a list with a spinner on one row. They are
+   a sequence, so they get a spine: a rail that fills as each stage completes,
+   a current row that breathes, and a check that draws in rather than appears.
+   ========================================================================== */
+.run-steps { position: relative; }
+.run-steps::before {
+  content: "";
+  position: absolute; left: 11px; top: 14px; bottom: 14px;
+  width: 1px; background: var(--line);
+}
+.run-step { position: relative; }
+.run-step > span:first-child { position: relative; z-index: 1; background: var(--surface-overlay); }
+
+.run-step.complete > span:first-child > svg {
+  color: var(--ok-solid);
+  animation: step-check 320ms var(--ease) 1;
+}
+@keyframes step-check {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.run-step.running { color: var(--ink); }
+.run-step.running > span:first-child::after {
+  content: "";
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid oklch(from var(--a-4) l c h / 0.5);
+  animation: step-ring 1.5s var(--ease-linear) infinite;
+}
+@keyframes step-ring {
+  0%   { opacity: 0.8; transform: scale(0.8); }
+  100% { opacity: 0;   transform: scale(1.5); }
+}
+.run-step.running strong { color: var(--a-6); }
+
+.run-progress [data-slot="progress-indicator"] { background: var(--a-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .run-step.complete > span:first-child > svg,
+  .run-step.running > span:first-child::after { animation: none; }
+}
+
+/* ---- appearance settings ----------------------------------------------- */
+.settings { width: min(680px, calc(100vw - 40px)) !important; max-width: none !important; }
+.settings-section { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
+.settings-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.settings-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: var(--ctl-md); padding: 0 12px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface-card); color: var(--ink-muted);
+  font-size: 0.8125rem; font-weight: 500;
+}
+.settings-chip > svg { width: 14px; height: 14px; }
+.settings-chip:hover { border-color: var(--line-strong); background: var(--n-2); }
+.settings-chip[data-on="true"] {
+  border-color: var(--a-4); background: var(--a-1); color: var(--a-6); font-weight: 600;
+}
+.settings-chip--wide { height: auto; padding: 9px 12px; align-items: flex-start; text-align: left; }
+.settings-chip--wide strong { display: block; font-size: 0.8125rem; }
+.settings-chip--wide small { display: block; font-size: 0.6875rem; color: var(--ink-dim); margin-top: 1px; }
+.settings-chip--wide[data-on="true"] small { color: var(--a-6); }
+
+.palette-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.palette-card {
+  position: relative;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface-card);
+  text-align: left;
+  transition: border-color var(--d-2) var(--ease), box-shadow var(--d-2) var(--ease);
+}
+.palette-card:hover { border-color: var(--line-strong); box-shadow: var(--elev-1); }
+.palette-card[data-on="true"] { border-color: var(--a-4); box-shadow: 0 0 0 3px oklch(from var(--a-4) l c h / 0.14); }
+.palette-swatches { display: inline-flex; flex: none; border-radius: var(--r-xs); overflow: hidden; }
+.palette-swatches > i { display: block; width: 13px; height: 26px; }
+.palette-text { flex: 1; min-width: 0; }
+.palette-text strong { display: block; font-size: 0.75rem; font-weight: 600; color: var(--ink); }
+.palette-text small { display: block; font-size: 0.625rem; color: var(--ink-dim); }
+.palette-tick {
+  flex: none; display: grid; place-items: center;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: var(--a-4); color: oklch(0.99 0.004 84);
+}
+.palette-tick > svg { width: 11px; height: 11px; stroke-width: 3; }
+@media (max-width: 560px) { .palette-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- palette groups ---------------------------------------------------- */
+.settings { max-height: 86vh; overflow-y: auto; }
+.palette-groups { display: flex; flex-direction: column; gap: 14px; }
+.palette-group-name {
+  display: block; margin-bottom: 6px;
+  font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.palette-card { min-width: 0; }
+.palette-swatches > i { width: 14px; height: 28px; }
+.palette-text strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.palette-text small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

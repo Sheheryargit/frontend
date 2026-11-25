@@ -1,0 +1,82 @@
+/* Spark — stylesheet entry. Imports must precede all rules. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400..600&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import './styles/tokens.css';
+@import './styles/palettes.css';
+@import './styles/base.css';
+@import './styles/compat.css';
+@import './styles/legacy.css';
+
+/* rebuilt layers — after legacy so they win */
+@import './styles/ui.css';
+@import './styles/shell.css';
+@import './styles/rail.css';
+@import './styles/brief.css';
+@import './styles/board.css';
+@import './styles/chat.css';
+@import './styles/decision.css';
+@import './styles/landing.css';
+@import './styles/pipeline.css';
+@import './styles/atlas.css';
+@import './styles/cinematic.css';
+@import './styles/control.css';
+@import './styles/discovery.css';
+@import './styles/landingTicker.css';
+
+
+@custom-variant dark (&:is(.dark *));
+
+/* Expose the token layer to Tailwind utilities. */
+@theme inline {
+  --color-background: var(--surface-app);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface-card);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface-overlay);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--a-4);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--n-3);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--n-3);
+  --color-muted-foreground: var(--ink-muted);
+  --color-accent: var(--n-3);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--bad-solid);
+  --color-border: var(--line);
+  --color-input: var(--line-strong);
+  --color-ring: var(--a-4);
+
+  --color-surface-app: var(--surface-app);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-dim: var(--ink-dim);
+  --color-line: var(--line);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+
+  --font-sans: var(--family-sans);
+  --font-serif: var(--family-display);
+  --font-mono: var(--family-mono);
+
+  --shadow-e0: var(--elev-0);
+  --shadow-e1: var(--elev-1);
+  --shadow-e2: var(--elev-2);
+  --shadow-e3: var(--elev-3);
+  --shadow-e4: var(--elev-4);
+  --shadow-e5: var(--elev-5);
+
+  --ease-signature: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-spin: spin 1s linear infinite;
+}

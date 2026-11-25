@@ -1,0 +1,182 @@
+/* ============================================================================
+   The capture pipeline.
+
+   Eight stages on one rail, used horizontally on the front door and vertically
+   inside the console. Progress is distance travelled along the rail, not a
+   count — and a pulse runs the rail while the agent is mid-capture, which is
+   what makes it read as a pipeline rather than a checklist.
+   ========================================================================== */
+
+.pipe { position: relative; }
+.pipe-nodes { list-style: none; margin: 0; padding: 0; }
+
+.pipe-rail { position: absolute; background: var(--n-4); border-radius: var(--r-full); overflow: hidden; }
+/* The rail is drawn per segment, not as one continuous fill: stages complete
+   out of order, and a single fill painted the rail beside stages that were
+   still empty. A segment is live only when the stage it leaves is done. */
+.pipe-rail-fill { display: none; }
+.pipe-rail-pulse {
+  position: absolute; top: 0; bottom: 0; width: 34%;
+  background: linear-gradient(90deg, transparent, oklch(from var(--a-4) l c h / 0.55), transparent);
+  animation: pipe-pulse 2.6s var(--ease-in-out) infinite;
+}
+@keyframes pipe-pulse {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(380%); }
+}
+
+/* the node button */
+.pipe-dot {
+  position: relative;
+  display: grid; place-items: center;
+  width: 26px; height: 26px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-app);
+  color: var(--ink-dim);
+  padding: 0;
+}
+.pipe-dot > span { display: grid; place-items: center; }
+.pipe-dot svg { width: 12px; height: 12px; }
+.pipe-dot:disabled { cursor: default; }
+
+.pipe-node[data-state="sensed"] .pipe-dot {
+  border-style: dashed;
+  border-color: oklch(from var(--a-4) l c h / 0.5);
+  background: var(--a-1);
+  color: var(--a-6);
+}
+.pipe-node[data-state="active"] .pipe-dot {
+  border-color: var(--a-4);
+  background: var(--a-1);
+  color: var(--a-4);
+  box-shadow: 0 0 0 4px oklch(from var(--a-4) l c h / 0.14);
+}
+.pipe-node[data-state="done"] .pipe-dot {
+  border-color: transparent;
+  background: var(--a-4);
+  color: oklch(0.99 0.004 84);
+}
+.pipe-node[data-state="done"] .pipe-dot svg { stroke-width: 3; }
+
+/* ---- horizontal: the front door --------------------------------------- */
+.pipe--horizontal { padding: 6px 0 0; }
+.pipe--horizontal .pipe-rail { left: 13px; right: 13px; top: 19px; height: 2px; }
+
+.pipe--horizontal .pipe-nodes {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0;
+}
+.pipe--horizontal .pipe-node {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  min-width: 0;
+}
+.pipe--horizontal .pipe-node[data-state="done"]:not(:last-child)::after {
+  content: "";
+  position: absolute; top: 12px; height: 2px;
+  left: calc(50% + 15px); right: calc(-50% + 15px);
+  background: var(--a-4);
+  border-radius: var(--r-full);
+  transform-origin: left center;
+  animation: seg-in 760ms var(--ease) 1;
+}
+.pipe--horizontal .pipe-label {
+  font-size: 0.625rem; font-weight: 500; letter-spacing: 0.01em;
+  color: var(--ink-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+  transition: color var(--d-3) var(--ease);
+}
+.pipe--horizontal .pipe-node[data-state="done"] .pipe-label,
+.pipe--horizontal .pipe-node[data-state="sensed"] .pipe-label { color: var(--a-6); font-weight: 550; }
+.pipe-gap { display: none; }
+
+/* ---- vertical: inside the console ------------------------------------- */
+.pipe--vertical { padding: 2px 0 6px; }
+.pipe--vertical .pipe-rail { left: 15px; top: 20px; bottom: 20px; width: 2px; }
+
+.pipe--vertical .pipe-rail-pulse {
+  left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 30%;
+  background: linear-gradient(180deg, transparent, oklch(from var(--a-4) l c h / 0.55), transparent);
+  animation-name: pipe-pulse-v;
+}
+@keyframes pipe-pulse-v {
+  0%   { transform: translateY(-120%); }
+  100% { transform: translateY(380%); }
+}
+.pipe--vertical .pipe-nodes { position: relative; display: flex; flex-direction: column; gap: 2px; }
+.pipe--vertical .pipe-node[data-state="done"]:not(:last-child)::after {
+  content: "";
+  position: absolute; left: 15px; top: 32px; bottom: -4px;
+  width: 2px; background: var(--a-4); border-radius: var(--r-full);
+  transform-origin: top center;
+  animation: seg-in-v 760ms var(--ease) 1;
+}
+.pipe--vertical .pipe-node {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 7px 8px 7px 2px;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  transition: background-color var(--d-2) var(--ease), border-color var(--d-2) var(--ease);
+}
+.pipe--vertical .pipe-node:hover { background: var(--n-2); }
+.pipe--vertical .pipe-node[data-open] {
+  background: var(--surface-raised);
+  border-color: var(--line);
+  box-shadow: var(--elev-1);
+}
+.pipe--vertical .pipe-text { min-width: 0; padding-top: 3px; }
+.pipe--vertical .pipe-label {
+  display: block;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: -0.002em;
+  color: var(--ink);
+}
+.pipe-value { display: block; margin-top: 2px; }
+
+.pipe-empty { font-size: 0.6875rem; color: var(--ink-dim); font-style: italic; }
+.pipe-node[data-state="sensed"] .pipe-empty { color: var(--a-6); font-style: normal; }
+
+.pipe-filled { display: block; }
+.pipe-filled > span:first-child {
+  display: block;
+  font-size: 0.75rem; line-height: 1.45; color: var(--ink-muted);
+}
+.pipe-origin {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 3px;
+  font-size: 0.625rem; font-weight: 550; color: var(--ink-dim);
+}
+.pipe-origin > svg { width: 10px; height: 10px; }
+.pipe-node[data-state="done"] .pipe-origin { color: var(--a-6); }
+
+/* inline editing, opened in place */
+.pipe-edit { overflow: hidden; }
+.pipe-edit > :first-child { margin-top: 4px; }
+.pipe-edit-close {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 7px; padding: 3px 8px;
+  border: 1px solid var(--line); border-radius: var(--r-full);
+  background: var(--surface-card);
+  font-size: 0.6875rem; font-weight: 550; color: var(--ink-muted);
+}
+.pipe-edit-close > svg { width: 11px; height: 11px; }
+.pipe-edit-close:hover { border-color: var(--a-3); color: var(--a-6); background: var(--a-1); }
+
+@media (max-width: 720px) {
+  .pipe--horizontal .pipe-nodes { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 14px; }
+  .pipe--horizontal .pipe-rail { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .pipe-rail-pulse { animation: none; opacity: 0; } }
+
+@keyframes seg-in   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes seg-in-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .pipe-node::after { animation: none !important; }
+}

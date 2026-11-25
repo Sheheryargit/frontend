@@ -1,0 +1,159 @@
+/* ============================================================================
+   Palettes.
+
+   A palette is four numbers: neutral hue, neutral chroma, accent hue, accent
+   chroma. Every surface, border and accent step derives from those, so adding
+   a palette is four values — not a new set of ramps to keep in sync.
+
+   Selection criteria: light-first, enterprise-legible, and deliberately NOT
+   the default SaaS blues. Each accent clears 4.5:1 as text on its own canvas.
+   ========================================================================== */
+
+:root {
+  --h-n: 84;    --c-n: 1;     /* neutral hue / chroma multiplier */
+  --h-a: 45;    --c-a: 1;     /* accent  hue / chroma multiplier */
+}
+
+/* ============================================================================
+   Palettes — tuned for dark mode.
+
+   Accent hue is never in the green band (120–170). Green is reserved for
+   semantic "ready / pass" so a status tick never collides with the brand.
+   Dark accents sit at L 0.68 with chroma tuned per hue: yellows and cyans
+   read brighter than violets at the same numbers, so they carry less.
+   ========================================================================== */
+
+/* ---- blues and cyans --------------------------------------------------- */
+[data-palette="ice-blue"]    { --h-n: 240; --c-n: 0.55; --h-a: 232; --c-a: 1.15; }
+[data-palette="azure"]       { --h-n: 252; --c-n: 0.65; --h-a: 250; --c-a: 1.10; }
+[data-palette="cyan"]        { --h-n: 220; --c-n: 0.60; --h-a: 203; --c-a: 1.05; }
+[data-palette="steel"]       { --h-n: 236; --c-n: 0.45; --h-a: 238; --c-a: 0.62; }
+
+/* ---- violets and indigos ----------------------------------------------- */
+[data-palette="periwinkle"]  { --h-n: 268; --c-n: 0.60; --h-a: 272; --c-a: 1.00; }
+[data-palette="indigo"]      { --h-n: 276; --c-n: 0.70; --h-a: 284; --c-a: 1.05; }
+[data-palette="violet"]      { --h-n: 292; --c-n: 0.70; --h-a: 298; --c-a: 0.98; }
+[data-palette="lavender"]    { --h-n: 286; --c-n: 0.50; --h-a: 290; --c-a: 0.66; }
+
+/* ---- pinks and magentas ------------------------------------------------ */
+[data-palette="orchid"]      { --h-n: 312; --c-n: 0.68; --h-a: 322; --c-a: 0.95; }
+[data-palette="magenta"]     { --h-n: 330; --c-n: 0.75; --h-a: 344; --c-a: 1.00; }
+[data-palette="plum"]        { --h-n: 328; --c-n: 0.58; --h-a: 338; --c-a: 0.80; }
+
+/* ---- reds and corals --------------------------------------------------- */
+[data-palette="rose"]        { --h-n: 8;   --c-n: 0.70; --h-a: 12;  --c-a: 1.00; }
+[data-palette="coral"]       { --h-n: 30;  --c-n: 0.80; --h-a: 27;  --c-a: 1.05; }
+[data-palette="terracotta"]  { --h-n: 42;  --c-n: 0.85; --h-a: 36;  --c-a: 1.00; }
+
+/* ---- ambers and golds -------------------------------------------------- */
+[data-palette="amber"]       { --h-n: 76;  --c-n: 0.80; --h-a: 70;  --c-a: 1.00; }
+[data-palette="gold"]        { --h-n: 92;  --c-n: 0.75; --h-a: 88;  --c-a: 0.95; }
+[data-palette="copper"]      { --h-n: 56;  --c-n: 0.85; --h-a: 48;  --c-a: 1.05; }
+[data-palette="bone-clay"]   { --h-n: 84;  --c-n: 1.00; --h-a: 45;  --c-a: 1.00; }
+
+/* ---- near-neutral ------------------------------------------------------ */
+[data-palette="graphite"]    { --h-n: 256; --c-n: 0.40; --h-a: 258; --c-a: 0.45; }
+[data-palette="slate-ice"]   { --h-n: 246; --c-n: 0.55; --h-a: 226; --c-a: 0.82; }
+
+/* ============================================================================
+   Derived ramps. Light theme.
+   ========================================================================== */
+:root {
+  --n-1:  oklch(0.962 calc(0.008 * var(--c-n)) var(--h-n));
+  --n-2:  oklch(0.945 calc(0.010 * var(--c-n)) var(--h-n));
+  --n-3:  oklch(0.922 calc(0.012 * var(--c-n)) var(--h-n));
+  --n-4:  oklch(0.898 calc(0.013 * var(--c-n)) var(--h-n));
+  --n-5:  oklch(0.874 calc(0.014 * var(--c-n)) var(--h-n));
+  --n-6:  oklch(0.850 calc(0.015 * var(--c-n)) var(--h-n));
+  --n-7:  oklch(0.808 calc(0.016 * var(--c-n)) var(--h-n));
+  --n-8:  oklch(0.740 calc(0.017 * var(--c-n)) var(--h-n));
+  --n-9:  oklch(0.615 calc(0.016 * var(--c-n)) var(--h-n));
+  --n-10: oklch(0.570 calc(0.015 * var(--c-n)) var(--h-n));
+  --n-11: oklch(0.472 calc(0.014 * var(--c-n)) var(--h-n));
+  --n-12: oklch(0.252 calc(0.012 * var(--c-n)) var(--h-n));
+
+  --n-a6: oklch(0.252 calc(0.012 * var(--c-n)) var(--h-n) / 0.09);
+  --n-a7: oklch(0.252 calc(0.012 * var(--c-n)) var(--h-n) / 0.14);
+  --n-a8: oklch(0.252 calc(0.012 * var(--c-n)) var(--h-n) / 0.22);
+
+  --a-1: oklch(0.966 calc(0.018 * var(--c-a)) var(--h-a));
+  --a-2: oklch(0.930 calc(0.040 * var(--c-a)) var(--h-a));
+  --a-3: oklch(0.850 calc(0.075 * var(--c-a)) var(--h-a));
+  --a-4: oklch(0.620 calc(0.140 * var(--c-a)) var(--h-a));
+  --a-5: oklch(0.572 calc(0.138 * var(--c-a)) var(--h-a));
+  --a-6: oklch(0.470 calc(0.115 * var(--c-a)) var(--h-a));
+
+  --surface-app:     var(--n-1);
+  --surface-sunken:  var(--n-2);
+  --surface-card:    oklch(0.987 calc(0.006 * var(--c-n)) var(--h-n));
+  --surface-raised:  oklch(0.993 calc(0.004 * var(--c-n)) var(--h-n));
+  --surface-overlay: oklch(0.995 calc(0.003 * var(--c-n)) var(--h-n));
+  --tint-rail:       oklch(0.948 calc(0.011 * var(--c-n)) var(--h-n));
+
+  --sh:   var(--h-n) 22% 11%;
+  --ring: var(--h-n) 12% 12%;
+}
+
+/* ============================================================================
+   Dark. Re-derived from the same four numbers, not inverted.
+   ========================================================================== */
+:root.dark, :root[data-theme="dark"] {
+  --n-1:  oklch(0.172 calc(0.006 * var(--c-n)) var(--h-n));
+  --n-2:  oklch(0.206 calc(0.007 * var(--c-n)) var(--h-n));
+  --n-3:  oklch(0.250 calc(0.008 * var(--c-n)) var(--h-n));
+  --n-4:  oklch(0.288 calc(0.010 * var(--c-n)) var(--h-n));
+  --n-5:  oklch(0.322 calc(0.011 * var(--c-n)) var(--h-n));
+  --n-6:  oklch(0.362 calc(0.012 * var(--c-n)) var(--h-n));
+  --n-7:  oklch(0.420 calc(0.013 * var(--c-n)) var(--h-n));
+  --n-8:  oklch(0.524 calc(0.014 * var(--c-n)) var(--h-n));
+  --n-9:  oklch(0.600 calc(0.013 * var(--c-n)) var(--h-n));
+  --n-10: oklch(0.652 calc(0.012 * var(--c-n)) var(--h-n));
+  --n-11: oklch(0.768 calc(0.010 * var(--c-n)) var(--h-n));
+  --n-12: oklch(0.945 calc(0.006 * var(--c-n)) var(--h-n));
+
+  --a-1: oklch(0.270 calc(0.040 * var(--c-a)) var(--h-a));
+  --a-2: oklch(0.315 calc(0.055 * var(--c-a)) var(--h-a));
+  --a-3: oklch(0.400 calc(0.085 * var(--c-a)) var(--h-a));
+  --a-4: oklch(0.700 calc(0.138 * var(--c-a)) var(--h-a));
+  --a-5: oklch(0.748 calc(0.122 * var(--c-a)) var(--h-a));
+  --a-6: oklch(0.840 calc(0.088 * var(--c-a)) var(--h-a));
+
+  --surface-app:     var(--n-1);
+  --surface-sunken:  oklch(0.152 calc(0.006 * var(--c-n)) var(--h-n));
+  --surface-card:    var(--n-2);
+  --surface-raised:  var(--n-3);
+  --surface-overlay: oklch(0.278 calc(0.009 * var(--c-n)) var(--h-n));
+  --tint-rail:       oklch(0.196 calc(0.007 * var(--c-n)) var(--h-n));
+}
+
+/* ============================================================================
+   Type pairings. Display family is the voice; body stays a workhorse.
+   ========================================================================== */
+[data-type="editorial"] { --family-display: "Instrument Serif", Georgia, ui-serif, serif; }
+[data-type="grotesk"]   { --family-display: "InterVariable", "Inter", ui-sans-serif, system-ui, sans-serif; }
+[data-type="mono-tech"] { --family-display: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
+[data-type="grotesk"] .front-greeting,
+[data-type="grotesk"] .landing-title,
+[data-type="grotesk"] [data-slot="dialog-title"] { font-weight: 600; letter-spacing: -0.028em; }
+[data-type="mono-tech"] .front-greeting,
+[data-type="mono-tech"] .landing-title { font-weight: 500; letter-spacing: -0.03em; font-size: 0.86em; }
+[data-type="mono-tech"] .front-greeting > em,
+[data-type="grotesk"] .front-greeting > em { font-style: normal; }
+
+/* Swatch preview tokens: derived from whatever element carries data-palette,
+   so a palette card can show its own colours rather than the active theme's.
+   Always derived from the LIGHT ramp — these are identity chips, not surfaces. */
+[data-palette] {
+  --sw-bg:     oklch(0.962 calc(0.008 * var(--c-n)) var(--h-n));
+  --sw-raise:  oklch(0.922 calc(0.012 * var(--c-n)) var(--h-n));
+  --sw-ink:    oklch(0.615 calc(0.016 * var(--c-n)) var(--h-n));
+  --sw-accent: oklch(0.620 calc(0.140 * var(--c-a)) var(--h-a));
+}
+/* In dark mode the chips must preview the DARK ramp, or you are judging a
+   palette by colours the app will never show you. */
+.dark [data-palette], :root[data-theme="dark"] [data-palette] {
+  --sw-bg:     oklch(0.172 calc(0.006 * var(--c-n)) var(--h-n));
+  --sw-raise:  oklch(0.250 calc(0.008 * var(--c-n)) var(--h-n));
+  --sw-ink:    oklch(0.600 calc(0.013 * var(--c-n)) var(--h-n));
+  --sw-accent: oklch(0.700 calc(0.138 * var(--c-a)) var(--h-a));
+}

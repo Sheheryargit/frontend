@@ -1,0 +1,306 @@
+/* ============================================================================
+   Spark — design tokens
+   Sources: ref-saas.md (OKLCH ramps, elevation, motion physics),
+            ref-delta.md (signature easing, tracking law, opacity<=transform)
+   Authoring rules:
+     - Light and dark are authored separately. Dark is never an inversion.
+     - One accent. 3-5% of visible pixels. See --a-* usage law below.
+     - Elevation in light = shadow. Elevation in dark = lightness.
+   ========================================================================== */
+
+:root {
+  /* ---- neutral ramp (hue 255, cool slate) ------------------------------- */
+  --n-1:  oklch(0.962 0.008 84);   /* app background            */
+  --n-2:  oklch(0.945 0.010 84);   /* subtle background         */
+  --n-3:  oklch(0.922 0.012 84);   /* element background        */
+  --n-4:  oklch(0.898 0.013 82);   /* element hover             */
+  --n-5:  oklch(0.874 0.014 82);   /* element active            */
+  --n-6:  oklch(0.850 0.015 80);   /* hairline border           */
+  --n-7:  oklch(0.808 0.016 78);   /* border / ring             */
+  --n-8:  oklch(0.740 0.017 76);   /* border hover              */
+  --n-9:  oklch(0.615 0.016 72);   /* solid / dim icon          */
+  --n-10: oklch(0.570 0.015 70);   /* solid hover               */
+  --n-11: oklch(0.472 0.014 68);   /* muted text                */
+  --n-12: oklch(0.252 0.012 62);   /* primary text              */
+
+  /* alpha borders, for hairlines over arbitrary surfaces */
+  --n-a6: oklch(0.252 0.012 62 / 0.09);
+  --n-a7: oklch(0.252 0.012 62 / 0.14);
+  --n-a8: oklch(0.252 0.012 62 / 0.22);
+
+  /* ---- accent (hue 262) -------------------------------------------------
+     Allowed, exhaustively: primary CTA fill, focus ring, selected nav row,
+     selected-row inset marker, link text, progress fill, ONE chart series,
+     command-palette active item. Never: body icons, headings, card borders,
+     non-semantic badges, table headers, breadcrumbs.                      */
+  --a-1: oklch(0.966 0.018 50);
+  --a-2: oklch(0.930 0.040 48);
+  --a-3: oklch(0.850 0.075 47);
+  --a-4: oklch(0.620 0.140 45);    /* SOLID */
+  --a-5: oklch(0.572 0.138 44);    /* solid hover */
+  --a-6: oklch(0.480 0.115 44);    /* accent text on light, >=4.5:1 */
+
+  /* ---- semantics (hue-shifted per theme to hold perceived identity) ----- */
+  --ok-bg:   oklch(0.966 0.016 158);
+  --ok-bd:   oklch(0.860 0.042 158);
+  --ok-solid:oklch(0.560 0.085 158);
+  --ok-text: oklch(0.430 0.072 158);
+
+  --warn-bg:   oklch(0.972 0.022 80);
+  --warn-bd:   oklch(0.880 0.055 76);
+  --warn-solid:oklch(0.745 0.105 76);   /* needs DARK foreground text */
+  --warn-text: oklch(0.455 0.080 62);
+  --warn-on:   oklch(0.242 0.013 255);
+
+  --bad-bg:   oklch(0.968 0.018 28);
+  --bad-bd:   oklch(0.870 0.050 28);
+  --bad-solid:oklch(0.560 0.140 28);
+  --bad-text: oklch(0.470 0.125 28);
+
+  /* evidence quality — this product's own semantic axis */
+  --ev-strong:   var(--ok-solid);
+  --ev-moderate: oklch(0.620 0.080 225);
+  --ev-weak:     var(--warn-solid);
+  --ev-missing:  var(--n-8);          /* absence is grey, never red, never 0 */
+
+  /* ---- data visualisation ----------------------------------------------
+     Series 1 is the accent. The rest are hue-rotated at matched L/C so no
+     series shouts louder than another. Uncertainty bands derive from these. */
+  --v-1: oklch(0.520 0.095 205);
+  --v-2: oklch(0.580 0.075 250);
+  --v-3: oklch(0.600 0.078 160);
+  --v-4: oklch(0.660 0.085 92);
+  --v-5: oklch(0.600 0.095 34);
+  --v-6: oklch(0.550 0.085 310);
+  --v-band: oklch(0.520 0.095 205 / 0.13);   /* low-high range fill */
+  --v-grid: oklch(0.242 0.013 255 / 0.07);
+  --v-axis: var(--n-9);
+  --v-ceiling: var(--bad-solid);              /* budget ceiling line */
+
+  /* ---- surfaces (semantic aliases; components use these, not --n-*) ----- */
+  --surface-app:     var(--n-1);
+  --surface-sunken:  var(--n-2);
+  --surface-card:    oklch(0.987 0.006 84);
+  --surface-raised:  oklch(0.993 0.004 84);
+  --surface-overlay: oklch(0.995 0.003 84);
+  --surface-inset:   var(--n-3);
+  --ink:             var(--n-12);
+  --ink-muted:       var(--n-11);
+  --ink-dim:         var(--n-9);
+  --line:            var(--n-6);
+  --line-strong:     var(--n-7);
+  --scrim:           oklch(0.200 0.014 62 / 0.40);
+
+  /* region tints — subtle, and each one is a different hue family */
+  --tint-rail:   oklch(0.948 0.011 84);   /* sidebar, deeper eucalyptus */
+  --tint-guide:  oklch(0.952 0.012 84);   /* "how this works", sea      */
+  --tint-capture:oklch(0.952 0.012 84);   /* "what i capture", mint     */
+  --tint-base:   oklch(0.952 0.012 84);     /* foundation strip, sand     */
+
+  /* ---- radius — nested law: inner = outer - padding -------------------- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-full: 9999px;
+
+  /* ---- spacing, 4px base with a 2px half-step -------------------------- */
+  --s-0: 0px;   --s-h: 2px;  --s-1: 4px;  --s-2: 8px;   --s-3: 12px;
+  --s-4: 16px;  --s-5: 20px; --s-6: 24px; --s-7: 32px;  --s-8: 40px;
+  --s-9: 48px;  --s-10: 64px; --s-11: 80px; --s-12: 96px;
+
+  /* ---- elevation, light: shadow ---------------------------------------- */
+  --sh:   40 22% 11%;
+  --ring: 40 12% 12%;
+
+  --elev-0: 0 0 0 1px hsl(var(--ring) / 0.07);
+  --elev-1:
+    0 0 0 1px hsl(var(--ring) / 0.06),
+    0 1px 1px -0.5px hsl(var(--sh) / 0.06),
+    0 2px 2px -1px   hsl(var(--sh) / 0.05);
+  --elev-2:
+    0 0 0 1px hsl(var(--ring) / 0.06),
+    0 1px 1px -0.5px hsl(var(--sh) / 0.05),
+    0 2px 4px -2px   hsl(var(--sh) / 0.05),
+    0 4px 8px -4px   hsl(var(--sh) / 0.05);
+  --elev-3:
+    0 0 0 1px hsl(var(--ring) / 0.05),
+    0 1px 1px -0.5px hsl(var(--sh) / 0.04),
+    0 3px 6px -3px   hsl(var(--sh) / 0.05),
+    0 8px 16px -8px  hsl(var(--sh) / 0.06),
+    inset 0 1px 0 hsl(0 0% 100% / 0.60);
+  --elev-4:
+    0 0 0 1px hsl(var(--ring) / 0.05),
+    0 2px 4px -2px    hsl(var(--sh) / 0.04),
+    0 6px 12px -6px   hsl(var(--sh) / 0.05),
+    0 16px 32px -12px hsl(var(--sh) / 0.07),
+    0 32px 64px -24px hsl(var(--sh) / 0.08),
+    inset 0 1px 0 hsl(0 0% 100% / 0.70);
+  --elev-5:
+    0 0 0 1px hsl(var(--ring) / 0.05),
+    0 2px 4px -2px    hsl(var(--sh) / 0.03),
+    0 8px 16px -8px   hsl(var(--sh) / 0.05),
+    0 24px 48px -16px hsl(var(--sh) / 0.08),
+    0 48px 96px -32px hsl(var(--sh) / 0.10),
+    inset 0 1px 0 hsl(0 0% 100% / 0.80);
+
+  /* focus ring — one spec, everywhere, keyboard-only via :focus-visible */
+  --focus-ring: 0 0 0 2px var(--surface-app), 0 0 0 4px var(--a-4);
+
+  /* ---- type families ---------------------------------------------------- */
+  --family-sans: "InterVariable", "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --family-display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype",
+    Palatino, Georgia, ui-serif, serif;
+  --family-mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono",
+    SFMono-Regular, Menlo, "Cascadia Mono", "Roboto Mono", monospace;
+
+  --font-sans: var(--family-sans);
+  --font-display: var(--family-display);
+  --font-mono: var(--family-mono);
+
+  /* ---- motion ----------------------------------------------------------
+     The signature curve. Delta Cafes uses one easing on 73 of ~110
+     transitions; that single physics is most of why it reads as one object.
+     Everything here defaults to it unless purpose demands otherwise.      */
+  --ease: cubic-bezier(0.19, 1, 0.22, 1);          /* SIGNATURE: easeOutExpo */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);      /* enter                  */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);       /* exit the viewport only */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* on-screen A->B, morph  */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);      /* sheets, drawers        */
+  --ease-linear: linear;                           /* opacity, scrim, progress */
+
+  --d-1: 80ms;    --d-2: 120ms;  --d-3: 160ms;  --d-4: 200ms;
+  --d-5: 260ms;   --d-6: 320ms;  --d-7: 450ms;  --d-8: 500ms;  --d-9: 650ms;
+
+  /* Delta's rule: opacity never outlasts transform. */
+  --d-fade: var(--d-2);
+  --d-move: var(--d-4);
+
+  /* ---- layout ----------------------------------------------------------- */
+  --w-sidebar: 248px;
+  --w-sidebar-collapsed: 60px;
+  --w-content: 1440px;        /* data caps here; chrome may go full-bleed */
+  --w-prose: 68ch;
+  --h-header: 52px;
+
+  /* control heights, locked to row heights */
+  --ctl-xs: 24px; --ctl-sm: 28px; --ctl-md: 32px; --ctl-lg: 40px; --ctl-xl: 48px;
+  --row-h: 36px;
+}
+
+/* ============================================================================
+   Dark — re-authored, not inverted. Elevation by lightness.
+   ========================================================================== */
+:root.dark,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --n-1:  oklch(0.172 0.006 70);
+  --n-2:  oklch(0.206 0.007 70);
+  --n-3:  oklch(0.250 0.008 72);
+  --n-4:  oklch(0.291 0.016 255);
+  --n-5:  oklch(0.323 0.018 255);
+  --n-6:  oklch(0.364 0.019 255);
+  --n-7:  oklch(0.423 0.021 255);
+  --n-8:  oklch(0.527 0.023 255);
+  --n-9:  oklch(0.602 0.021 255);
+  --n-10: oklch(0.655 0.020 255);
+  --n-11: oklch(0.768 0.010 78);
+  --n-12: oklch(0.945 0.006 84);
+
+  --n-a6: oklch(0.949 0.007 255 / 0.10);
+  --n-a7: oklch(0.949 0.007 255 / 0.16);
+  --n-a8: oklch(0.949 0.007 255 / 0.24);
+
+  --a-1: oklch(0.270 0.040 45);
+  --a-2: oklch(0.315 0.055 45);
+  --a-3: oklch(0.400 0.085 45);
+  --a-4: oklch(0.680 0.135 48);
+  --a-5: oklch(0.725 0.120 50);
+  --a-6: oklch(0.820 0.085 52);
+
+  /* semantic solids: +L, -C vs light, or they vibrate.
+     tints stay below L 0.30 so a flagged row never reads as selected. */
+  --ok-bg:   oklch(0.262 0.030 158);
+  --ok-bd:   oklch(0.380 0.050 158);
+  --ok-solid:oklch(0.660 0.095 158);
+  --ok-text: oklch(0.800 0.070 158);
+
+  --warn-bg:   oklch(0.272 0.032 78);
+  --warn-bd:   oklch(0.392 0.055 78);
+  --warn-solid:oklch(0.780 0.105 76);
+  --warn-text: oklch(0.858 0.078 80);
+  --warn-on:   oklch(0.178 0.008 255);
+
+  --bad-bg:   oklch(0.266 0.040 28);
+  --bad-bd:   oklch(0.388 0.070 28);
+  --bad-solid:oklch(0.620 0.145 28);
+  --bad-text: oklch(0.790 0.090 24);
+
+  --ev-moderate: oklch(0.680 0.078 225);
+
+  --tint-rail:   oklch(0.196 0.007 70);
+  --tint-guide:  oklch(0.206 0.007 70);
+  --tint-capture:oklch(0.206 0.007 70);
+  --tint-base:   oklch(0.206 0.007 70);
+  --ev-missing:  var(--n-8);
+
+  /* chart series use the dark ramp's upper steps, not the light solids */
+  --v-1: oklch(0.660 0.098 205);
+  --v-2: oklch(0.680 0.078 250);
+  --v-3: oklch(0.700 0.080 160);
+  --v-4: oklch(0.760 0.088 92);
+  --v-5: oklch(0.690 0.098 34);
+  --v-6: oklch(0.640 0.090 310);
+  --v-band: oklch(0.660 0.098 205 / 0.17);
+  --v-grid: oklch(0.949 0.007 255 / 0.08);
+
+  /* surface ladder: app -> panel -> card -> popover -> modal */
+  --surface-app:     oklch(0.172 0.006 70);
+  --surface-sunken:  oklch(0.152 0.006 70);
+  --surface-card:    oklch(0.206 0.007 70);
+  --surface-raised:  oklch(0.250 0.008 72);
+  --surface-overlay: oklch(0.278 0.009 72);
+  --surface-inset:   oklch(0.160 0.008 255);
+  --line:            var(--n-6);
+  --line-strong:     var(--n-7);
+  --scrim:           oklch(0.09 0.006 255 / 0.65);
+
+  /* shadows in dark are atmosphere, not hierarchy: large blur, no offset tricks,
+     plus a top inset highlight and a ring to do the actual separating. */
+  --elev-0: 0 0 0 1px oklch(0.949 0.007 255 / 0.07);
+  --elev-1:
+    0 0 0 1px oklch(0.949 0.007 255 / 0.07),
+    inset 0 1px 0 oklch(1 0 0 / 0.05);
+  --elev-2:
+    0 0 0 1px oklch(0.949 0.007 255 / 0.08),
+    inset 0 1px 0 oklch(1 0 0 / 0.06),
+    0 2px 8px -4px oklch(0 0 0 / 0.50);
+  --elev-3:
+    0 0 0 1px oklch(0.949 0.007 255 / 0.09),
+    inset 0 1px 0 oklch(1 0 0 / 0.06),
+    0 8px 24px -8px oklch(0 0 0 / 0.55);
+  --elev-4:
+    0 0 0 1px oklch(0.949 0.007 255 / 0.10),
+    inset 0 1px 0 oklch(1 0 0 / 0.07),
+    0 16px 48px -12px oklch(0 0 0 / 0.65);
+  --elev-5:
+    0 0 0 1px oklch(0.949 0.007 255 / 0.11),
+    inset 0 1px 0 oklch(1 0 0 / 0.08),
+    0 32px 80px -16px oklch(0 0 0 / 0.70);
+
+  --focus-ring: 0 0 0 2px var(--surface-app), 0 0 0 4px var(--a-4);
+}
+
+/* P3 upgrade only where the display can show it */
+@media (color-gamut: p3) {
+  :root { --a-4: oklch(0.620 0.152 45); }
+  :root.dark, :root[data-theme="dark"] { --a-4: oklch(0.680 0.146 48); }
+}
+
+/* ---- density, shipped as a preference rather than a philosophy --------- */
+:root[data-density="compact"]     { --row-h: 28px; --ctl-md: 28px; }
+:root[data-density="comfortable"] { --row-h: 44px; --ctl-md: 36px; }

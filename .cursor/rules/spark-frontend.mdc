@@ -1,0 +1,6 @@
+---
+description: Preserve the Project Spark frontend architecture and design language
+alwaysApply: true
+---
+
+Read the repository root `AGENTS.md` before editing. For UI work, follow `docs/DESIGN.md` and `docs/DECISIONS.md`; for service or agent work, follow `docs/ARCHITECTURE.md` and `docs/AGENT.md`. Keep changes within the owning feature and pass the typecheck, test and build gates in `CONTRIBUTING.md`.

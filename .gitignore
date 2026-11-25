@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+dist-ssr/
+*.local
+
+# typescript
+*.tsbuildinfo
+
+# editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# os
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# tooling scratch
+.openai/
+coverage/
+
+# Private project discovery material and third-party reference captures
+docs/discovery-context.txt
+docs/reference/control-ai/

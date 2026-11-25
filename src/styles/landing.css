@@ -1,0 +1,290 @@
+/* ============================================================================
+   The front door.
+
+   One column. The composer is the hero and nothing flanks it, because anything
+   placed beside an input competes with it — which is why every serious
+   assistant product converges on this shape. Warmth comes from the neutral
+   ramp (bone, hue 84) rather than from tinted panels; the single accent is a
+   clay that appears on exactly three things: the mark, the focus ring and the
+   captured pips.
+   ========================================================================== */
+
+.front {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--h-header) - 92px);
+  padding: 20px 0 40px;
+}
+
+.front-inner {
+  width: 100%;
+  max-width: 660px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* the mark: one clay dot, the smallest possible brand gesture */
+.front-mark { margin-bottom: 26px; }
+.front-mark > span {
+  display: block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--a-4);
+  box-shadow: 0 0 0 5px oklch(from var(--a-4) l c h / 0.14),
+              0 0 0 11px oklch(from var(--a-4) l c h / 0.07);
+}
+
+.front-greeting {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.2vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  text-wrap: balance;
+  max-width: 19ch;
+}
+.front-greeting > em {
+  display: block;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+/* ---- composer: the hero ------------------------------------------------ */
+.front-composer { width: 100%; margin-top: 30px; text-align: left; }
+.front-composer .composer {
+  border-radius: var(--r-xl);
+  border-color: var(--line);
+  background: var(--surface-raised);
+  box-shadow: var(--elev-2);
+  transition: border-color var(--d-3) var(--ease), box-shadow var(--d-3) var(--ease);
+}
+.front-composer .composer:focus-within {
+  border-color: oklch(from var(--a-4) l c h / 0.55);
+  box-shadow: var(--elev-3), 0 0 0 4px oklch(from var(--a-4) l c h / 0.10);
+}
+.front-composer .composer [data-slot="textarea"] {
+  min-height: 94px;
+  padding: 18px 20px 6px;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.front-composer .composer-bar { padding: 8px 12px 12px 20px; }
+
+/* a thin clay line across the top edge while the agent works */
+.front-composer[data-busy="true"] .composer { border-color: oklch(from var(--a-4) l c h / 0.4); }
+.front-composer[data-busy="true"] .composer::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  background: linear-gradient(90deg, transparent, var(--a-4), transparent);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  animation: front-scan 1.5s var(--ease-in-out) infinite;
+}
+.front-composer .composer { position: relative; }
+@keyframes front-scan {
+  0%   { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
+}
+
+/* ---- suggestions ------------------------------------------------------- */
+.front-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+}
+.front-suggestions > button {
+  position: relative;
+  display: block;
+  padding: 13px 34px 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-card);
+  color: var(--ink);
+  text-align: left;
+  transition: border-color var(--d-2) var(--ease), background-color var(--d-2) var(--ease),
+              box-shadow var(--d-2) var(--ease);
+}
+.front-suggestions > button:not(:hover) { transition-duration: 0ms; }
+.front-suggestions > button:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
+  box-shadow: var(--elev-2);
+}
+.front-suggestions > button > span {
+  display: block;
+  font-size: 0.8125rem; font-weight: 550; letter-spacing: -0.004em;
+}
+.front-suggestions > button > small {
+  display: block; margin-top: 3px;
+  font-size: 0.6875rem; color: var(--ink-dim);
+}
+.front-suggestions > button > svg {
+  position: absolute; right: 13px; top: 14px;
+  width: 14px; height: 14px;
+  color: var(--n-8);
+  transition: color var(--d-2) var(--ease), transform var(--d-2) var(--ease);
+}
+.front-suggestions > button:hover > svg { color: var(--a-4); transform: translate(1px, -1px); }
+
+/* ---- working ----------------------------------------------------------- */
+.front-working {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  width: 100%; margin-top: 14px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-card);
+  text-align: left;
+}
+.front-working-head {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.8125rem; font-weight: 600; color: var(--ink);
+}
+.front-working-head > svg { width: 14px; height: 14px; color: var(--a-4); }
+.front-working-line {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.75rem; color: var(--ink-muted);
+}
+.front-working-line > svg { width: 12px; height: 12px; color: var(--ok-solid); }
+
+/* ---- the eight details, as one quiet line ----------------------------- */
+.front-foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 30px; padding-top: 18px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+}
+.front-foot-label,
+.front-foot-note {
+  font-size: 0.6875rem; color: var(--ink-dim);
+}
+.front-foot-note { width: 100%; margin-top: 4px; }
+.front-pips { display: inline-flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+.front-pip {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-full);
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--ink-dim);
+  transition: border-color var(--d-4) var(--ease), background-color var(--d-4) var(--ease),
+              color var(--d-4) var(--ease);
+}
+.front-pip[data-on="true"] {
+  border-color: oklch(from var(--a-4) l c h / 0.4);
+  background: var(--a-1);
+  color: var(--a-6);
+}
+
+@media (max-width: 640px) {
+  .front-suggestions { grid-template-columns: minmax(0, 1fr); }
+  .front-greeting { font-size: 1.75rem; }
+}
+
+/* ============================================================================
+   The agentic layer — what the page does while you use it.
+   ========================================================================== */
+
+/* ---- live detection ----------------------------------------------------
+   A pip has three states: dormant, SEEN (the agent recognises it in what you
+   are typing, before you send) and captured. Seen is deliberately softer than
+   captured — a guess must not look like a fact.                            */
+.front-foot-label {
+  display: inline-flex; align-items: center;
+  min-width: 68px; justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+.front-pip {
+  display: inline-flex; align-items: center;
+  will-change: transform;
+}
+.front-pip-glyph {
+  display: inline-grid; place-items: center;
+  overflow: hidden; flex: none;
+}
+.front-pip-glyph > svg { width: 11px; height: 11px; }
+
+.front-pip[data-seen="true"] {
+  border-color: oklch(from var(--a-4) l c h / 0.32);
+  border-style: dashed;
+  background: oklch(from var(--a-1) l c h / 0.6);
+  color: var(--a-6);
+}
+.front-pip[data-on="true"] {
+  border-style: solid;
+  border-color: oklch(from var(--a-4) l c h / 0.45);
+  background: var(--a-1);
+  color: var(--a-6);
+}
+.front-pip[data-on="true"] .front-pip-glyph > svg { stroke-width: 3; }
+
+/* ---- send button state machine ---------------------------------------- */
+.send-button {
+  overflow: hidden;
+  transition: background-color var(--d-2) var(--ease),
+              transform var(--d-2) var(--ease),
+              box-shadow var(--d-2) var(--ease);
+}
+.send-button > span { display: grid; place-items: center; }
+.send-button[data-state="idle"] {
+  background: var(--n-4) !important;
+  color: var(--n-9) !important;
+  box-shadow: none !important;
+}
+.send-button[data-state="ready"] {
+  background: var(--a-4) !important;
+  color: oklch(0.99 0.004 84) !important;
+  box-shadow: 0 1px 2px oklch(from var(--a-4) l c h / 0.4),
+              0 0 0 0 oklch(from var(--a-4) l c h / 0.35) !important;
+  animation: send-ready var(--d-5) var(--ease) 1;
+}
+@keyframes send-ready {
+  0%   { transform: scale(0.88); }
+  55%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.send-button[data-state="ready"]:hover { transform: translateY(-1px); }
+.send-button[data-state="sending"] {
+  background: var(--a-5) !important;
+  color: oklch(0.99 0.004 84) !important;
+}
+
+/* ---- suggestion press -------------------------------------------------- */
+.front-suggestions > button:active { transform: scale(0.988); }
+.front-suggestions > button::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120px 80px at var(--px, 50%) var(--py, 50%),
+              oklch(from var(--a-4) l c h / 0.09), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--d-3) var(--ease);
+  pointer-events: none;
+}
+.front-suggestions > button:hover::after { opacity: 1; }
+
+/* ---- the composer while the agent reads it ---------------------------- */
+.front-composer .composer-bar { align-items: center; }
+.front-composer[data-busy="true"] .composer [data-slot="textarea"] { opacity: 0.6; }
+
+/* a caret that blinks while a suggestion types itself in */
+.front-composer [data-slot="textarea"]:disabled { opacity: 0.75; }
+
+@media (prefers-reduced-motion: reduce) {
+  .send-button[data-state="ready"] { animation: none; }
+}
+
+/* the front-door footer carries the pipeline */
+.front-foot { flex-direction: column; align-items: stretch; gap: 12px; }
+.front-foot-top {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+}
+.front-foot-label { min-width: 0; justify-content: flex-start; font-weight: 550; color: var(--ink-muted); }
+.front-foot-note { width: auto; margin-top: 0; }

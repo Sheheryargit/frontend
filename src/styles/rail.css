@@ -1,0 +1,218 @@
+/* ============================================================================
+   The rail.
+
+   Three things that used to be static text now report live state: where the
+   agent is, how far the campaign has travelled, and what each stage is waiting
+   on. The active marker is ONE element that slides between items, so the rail
+   reads as a single object rather than three that fade independently.
+   ========================================================================== */
+
+.rail {
+  position: sticky; top: 0;
+  display: flex; flex-direction: column; gap: 14px;
+  height: 100vh; padding: 14px 11px 11px;
+  border-right: 1px solid var(--line);
+  background: var(--tint-rail);
+  z-index: 5;
+}
+
+/* ---- wordmark ---------------------------------------------------------- */
+.rail-top { display: flex; align-items: center; gap: 9px; padding: 2px 5px; }
+.rail-logo {
+  display: grid; place-items: center;
+  width: 27px; height: 27px; border-radius: var(--r-sm);
+  background: var(--ink); color: var(--surface-app);
+}
+.rail-logo > svg { width: 15px; height: 15px; }
+.rail-word {
+  display: flex; flex-direction: column; line-height: 1.15;
+  font-size: 0.8125rem; font-weight: 650; letter-spacing: -0.008em; color: var(--ink);
+}
+.rail-word > i {
+  font-style: normal; font-size: 0.5625rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim);
+}
+
+/* ---- the agent --------------------------------------------------------- */
+.rail-agent {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-card);
+  overflow: hidden;
+}
+.rail-agent[data-busy] { border-color: oklch(from var(--a-4) l c h / 0.5); background: var(--a-1); }
+.rail-agent-orb {
+  position: relative; flex: none;
+  display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--n-3); color: var(--ink-muted);
+}
+.rail-agent[data-busy] .rail-agent-orb { background: var(--a-4); color: oklch(0.99 0.004 84); }
+.rail-agent-orb > span { display: grid; place-items: center; }
+.rail-agent-orb svg { width: 14px; height: 14px; }
+.rail-agent-ring {
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 1px solid var(--a-4);
+  animation: rail-ring 1.6s var(--ease-linear) infinite;
+}
+@keyframes rail-ring {
+  0%   { opacity: 0.8; transform: scale(0.72); }
+  100% { opacity: 0;   transform: scale(1.45); }
+}
+.rail-agent-text { min-width: 0; }
+.rail-agent-text strong {
+  display: block; font-size: 0.75rem; font-weight: 650; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rail-agent[data-busy] .rail-agent-text strong { color: var(--a-6); }
+.rail-agent-text small { display: block; font-size: 0.625rem; color: var(--ink-dim); }
+
+/* ---- search ------------------------------------------------------------ */
+.rail-search {
+  display: flex; align-items: center; gap: 9px;
+  height: var(--ctl-md); padding: 0 9px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface-card); color: var(--ink-dim);
+  font-size: 0.75rem;
+}
+.rail-search:hover { border-color: var(--line-strong); color: var(--ink-muted); }
+.rail-search > svg { width: 14px; height: 14px; }
+.rail-search > span { flex: 1; text-align: left; }
+.rail-search kbd {
+  padding: 1px 5px; border: 1px solid var(--line); border-radius: var(--r-xs);
+  background: var(--n-2); font-family: var(--font-mono); font-size: 0.5625rem;
+}
+
+/* ---- the journey ------------------------------------------------------- */
+.rail-nav { position: relative; display: flex; flex-direction: column; gap: 2px; }
+.rail-progress {
+  position: absolute; left: 20px; top: 20px; bottom: 20px;
+  width: 2px; border-radius: var(--r-full); background: var(--n-4);
+  overflow: hidden;
+}
+.rail-progress > i {
+  display: block; width: 100%; height: 100%;
+  border-radius: var(--r-full);
+  background: linear-gradient(180deg, var(--a-4), oklch(0.60 0.13 152));
+  transform-origin: top center;
+}
+
+.rail-item {
+  position: relative;
+  display: flex; align-items: center; gap: 11px;
+  padding: 8px 9px;
+  border: none; border-radius: var(--r-sm);
+  background: none; color: var(--ink-muted);
+  text-align: left;
+}
+.rail-item-bg {
+  position: absolute; inset: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-card);
+  box-shadow: var(--elev-0);
+  z-index: 0;
+}
+.rail-item > * { position: relative; z-index: 1; }
+.rail-item:hover:not(:disabled):not([data-on="true"]) { background: var(--n-3); }
+.rail-item:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.rail-node {
+  flex: none; display: grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--tint-rail);
+  color: var(--ink-dim);
+  transition: background-color var(--d-3) var(--ease), border-color var(--d-3) var(--ease), color var(--d-3) var(--ease);
+}
+.rail-node > span { display: grid; place-items: center; }
+.rail-node svg { width: 11px; height: 11px; }
+.rail-item[data-done] .rail-node {
+  border-color: transparent; background: oklch(0.60 0.13 152); color: oklch(0.99 0.004 150);
+}
+.rail-item[data-done] .rail-node svg { stroke-width: 3; }
+.rail-item[data-on="true"] .rail-node { border-color: var(--a-4); color: var(--a-4); }
+.rail-item[data-on="true"][data-done] .rail-node { color: oklch(0.99 0.004 150); }
+
+.rail-item-text { min-width: 0; }
+.rail-item-text small {
+  display: block; font-family: var(--font-mono);
+  font-size: 0.5625rem; letter-spacing: 0.06em; color: var(--ink-dim);
+}
+.rail-item-text strong { display: block; font-size: 0.75rem; font-weight: 550; }
+.rail-item[data-on="true"] .rail-item-text strong { color: var(--ink); font-weight: 650; }
+
+/* ---- the campaign ------------------------------------------------------ */
+.rail-campaign { display: flex; flex-direction: column; gap: 7px; }
+.rail-campaign > .t-overline { padding: 0 5px; }
+.rail-campaign-card {
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 8px;
+  padding: 10px 11px;
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface-card);
+}
+.rail-campaign-card strong { font-size: 0.75rem; font-weight: 600; color: var(--ink); }
+.rail-chip {
+  justify-self: end; padding: 1px 7px; border-radius: var(--r-full);
+  font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.03em;
+  background: var(--n-3); color: var(--ink-dim);
+}
+.rail-chip[data-tone="on"] { background: var(--a-1); color: var(--a-6); }
+.rail-meter {
+  grid-column: 1 / -1; height: 3px; margin-top: 3px;
+  border-radius: var(--r-full); background: var(--n-4); overflow: hidden;
+}
+.rail-meter > i { display: block; height: 100%; border-radius: var(--r-full); background: var(--a-4); }
+.rail-campaign-card small { grid-column: 1 / -1; font-size: 0.625rem; color: var(--ink-dim); }
+
+/* ---- controls ---------------------------------------------------------- */
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: 2px; }
+.rail-foot > button {
+  display: flex; align-items: center; gap: 10px;
+  height: var(--ctl-md); padding: 0 9px;
+  border: none; border-radius: var(--r-sm);
+  background: none; color: var(--ink-muted);
+  font-size: 0.75rem; text-align: left;
+}
+.rail-foot > button > svg { width: 15px; height: 15px; color: var(--ink-dim); }
+.rail-foot > button > span:first-of-type { flex: 1; }
+.rail-foot > button:hover { background: var(--n-3); color: var(--ink); }
+
+.rail-switch {
+  flex: none; width: 24px; height: 14px;
+  border-radius: var(--r-full); background: var(--n-5);
+  transition: background-color var(--d-2) var(--ease);
+}
+.rail-switch::after {
+  content: ""; display: block; width: 10px; height: 10px; margin: 2px;
+  border-radius: 50%; background: var(--surface-card);
+  transition: transform var(--d-3) var(--ease);
+}
+.rail-switch[data-on] { background: var(--a-4); }
+.rail-switch[data-on]::after { transform: translateX(10px); }
+
+.rail-person {
+  display: flex; align-items: center; gap: 9px;
+  margin-top: 7px; padding: 8px 7px 2px;
+  border-top: 1px solid var(--line);
+}
+.rail-avatar {
+  flex: none; display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: var(--r-full);
+  background: var(--n-4); color: var(--ink-muted);
+  font-size: 0.625rem; font-weight: 700;
+}
+.rail-person > span:nth-child(2) { flex: 1; min-width: 0; }
+.rail-person strong { display: block; font-size: 0.6875rem; font-weight: 600; color: var(--ink); }
+.rail-person small { display: block; font-size: 0.5625rem; color: var(--ink-dim); }
+
+@media (max-width: 1040px) {
+  .rail-word, .rail-search > span, .rail-search kbd, .rail-item-text,
+  .rail-campaign, .rail-foot > button > span, .rail-person > span:nth-child(2),
+  .rail-agent-text { display: none; }
+  .rail { padding: 14px 8px 10px; }
+  .rail-item, .rail-foot > button, .rail-search, .rail-agent { justify-content: center; }
+  .rail-progress { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .rail-agent-ring { animation: none; } }

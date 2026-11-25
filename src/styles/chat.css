@@ -1,0 +1,135 @@
+/* ============================================================================
+   The conversation.
+
+   An answer in the canvas is a sentence, not a job — so there is no phase rail
+   and no activity log here. The agent types, the detail lands on the board,
+   and one quiet line says which one. The long choreography stays on the
+   landing, where there is genuinely something to watch.
+   ========================================================================== */
+
+.chat-pane {
+  display: flex; flex-direction: column;
+  min-height: 520px; max-height: calc(100vh - var(--h-header) - 150px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-card);
+  box-shadow: var(--elev-1);
+  overflow: hidden;
+}
+
+.chat-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+}
+.chat-head h2 { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; font-weight: 650; }
+.chat-head h2 > svg { width: 17px; height: 17px; color: var(--ink-dim); }
+
+/* ---- messages ---------------------------------------------------------- */
+.chat {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 18px 16px;
+  overflow-y: auto;
+}
+
+.msg { display: flex; gap: 11px; max-width: 100%; }
+.msg--you { justify-content: flex-end; }
+
+.msg-avatar {
+  flex: none; display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: var(--r-md);
+  background: var(--ink); color: var(--surface-app);
+}
+.msg-avatar > svg { width: 16px; height: 16px; }
+
+.msg-body { min-width: 0; }
+.msg-who {
+  display: block; margin-bottom: 3px;
+  font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.msg--agent p {
+  font-size: 0.8125rem; line-height: 1.6; color: var(--ink);
+  white-space: pre-line; max-width: 62ch;
+}
+.msg--you .msg-body {
+  padding: 9px 13px;
+  border-radius: var(--r-lg) var(--r-lg) var(--r-xs) var(--r-lg);
+  background: var(--n-3);
+  max-width: 80%;
+}
+.msg--you p { font-size: 0.8125rem; line-height: 1.5; color: var(--ink); }
+
+/* ---- what just landed on the board ------------------------------------ */
+.msg-added {
+  display: flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  margin-left: 40px;
+  padding: 7px 14px 7px 7px;
+  border: 1px solid oklch(0.84 0.05 var(--d-hue));
+  border-radius: var(--r-full);
+  background: oklch(0.968 0.02 var(--d-hue));
+  font-size: 0.75rem; color: oklch(0.42 0.08 var(--d-hue));
+  overflow: hidden;
+}
+.dark .msg-added {
+  border-color: oklch(0.40 0.05 var(--d-hue));
+  background: oklch(0.26 0.03 var(--d-hue));
+  color: oklch(0.86 0.07 var(--d-hue));
+}
+.msg-added > svg { width: 15px; height: 15px; flex: none; }
+.msg-added-mark {
+  flex: none; display: grid; place-items: center;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: oklch(0.60 0.12 152); color: oklch(0.99 0.004 150);
+}
+.msg-added-mark > svg { width: 13px; height: 13px; stroke-width: 3; }
+.msg-added strong { font-weight: 650; }
+
+/* ---- typing ------------------------------------------------------------ */
+.typing { display: inline-flex; align-items: center; gap: 5px; height: 24px; }
+.typing > i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--n-8);
+  animation: typing-bob 1.25s var(--ease-in-out) infinite;
+}
+.typing > i:nth-child(2) { animation-delay: 0.16s; }
+.typing > i:nth-child(3) { animation-delay: 0.32s; }
+@keyframes typing-bob {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+
+/* ---- quick replies ----------------------------------------------------- */
+.chat-replies {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 0 16px 12px;
+  overflow: hidden;
+}
+.chat-replies > button {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-full);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font-size: 0.75rem; font-weight: 550;
+  box-shadow: var(--elev-0);
+  transition: border-color var(--d-2) var(--ease), background-color var(--d-2) var(--ease),
+              color var(--d-2) var(--ease);
+}
+.chat-replies > button:hover {
+  border-color: var(--a-4); background: var(--a-1); color: var(--a-6);
+}
+
+/* ---- foot -------------------------------------------------------------- */
+.chat-foot { border-top: 1px solid var(--line); padding: 12px 15px 13px; }
+.chat-foot .composer { box-shadow: var(--elev-0); }
+.chat-foot .composer [data-slot="textarea"] { min-height: 54px; font-size: 0.875rem; padding-top: 11px; }
+.chat-note {
+  margin-top: 8px;
+  font-size: 0.625rem; color: var(--ink-dim); text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) { .typing > i { animation: none; opacity: 0.6; } }
+@media (max-width: 1180px) { .chat-pane { max-height: none; } }

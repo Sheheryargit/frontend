@@ -1,0 +1,27 @@
+/* Landing idea channel: a calm, pausable news line beneath the primary chat.
+   The moving row is never the only way to reach a scenario: pointer hover,
+   keyboard focus and the explicit pause control all stop it. */
+.front-suggestions{display:block;grid-template-columns:none;width:100%;overflow:hidden;margin-top:15px}
+.front-channel{width:100%;padding:0;border:1px solid var(--line);border-radius:11px;background:color-mix(in oklch,var(--surface-card) 94%,var(--a-4));overflow:hidden;text-align:left;box-shadow:inset 0 1px color-mix(in oklch,var(--ink) 6%,transparent)}
+.front-channel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 13px 8px;border-bottom:1px solid var(--line)}
+.front-channel-title{display:flex;align-items:center;gap:8px;min-width:0;color:var(--ink-muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.front-channel-title svg{flex:none;color:var(--a-6)}.front-channel-title strong{font:650 9px var(--font-mono);letter-spacing:.08em;color:var(--ink)}
+.front-channel-title i{flex:none;width:4px;height:4px;border-radius:50%;background:var(--a-4);box-shadow:0 0 8px var(--a-4)}
+.front-channel[data-selected="true"] .front-channel-title i{animation:channel-beat 1.2s ease-in-out infinite}
+.front-channel-head>button{display:flex;align-items:center;gap:5px;flex:none;padding:4px 6px;border-radius:4px;color:var(--ink-dim);font:550 10px var(--font-mono)}
+.front-channel-head>button:hover:not(:disabled){color:var(--ink);background:var(--surface-raised)}.front-channel-head>button:disabled{opacity:.45}
+.front-channel-window{position:relative;overflow:hidden;padding:8px 0;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.front-channel-track{display:flex;width:max-content;animation:channel-travel 70s linear infinite;will-change:transform}
+.front-channel[data-paused="true"] .front-channel-track{animation-play-state:paused}
+.front-channel-item{display:flex;align-items:center;gap:10px;flex:none;width:252px;min-height:55px;margin-right:8px;padding:8px 11px;border:1px solid var(--line);border-radius:7px;background:var(--surface-raised);color:var(--ink);text-align:left;transition:border-color .18s var(--ease),background .18s var(--ease),transform .18s var(--ease),box-shadow .18s var(--ease)}
+.front-channel-item:hover:not(:disabled),.front-channel-item:focus-visible{border-color:var(--a-4);background:color-mix(in oklch,var(--a-4) 10%,var(--surface-raised));transform:translateY(-1px);box-shadow:var(--elev-1)}
+.front-channel-item[data-active="true"]{border-color:var(--a-4);background:color-mix(in oklch,var(--a-4) 15%,var(--surface-raised));box-shadow:inset 2px 0 var(--a-4)}
+.front-channel-item:disabled:not([data-active="true"]){opacity:.5}
+.front-channel-kind{align-self:flex-start;margin-top:2px;color:var(--a-6);font:650 9px var(--font-mono);letter-spacing:.04em}
+.front-channel-copy{display:grid;gap:2px;min-width:0}.front-channel-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:620}.front-channel-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-dim);font-size:10px}
+.front-channel-item>svg{flex:none;margin-left:auto;color:var(--ink-dim)}.front-channel-item:hover>svg{color:var(--a-6)}
+.front-channel-progress{height:2px;background:var(--line);overflow:hidden}.front-channel-progress>span{display:block;width:25%;height:100%;background:var(--a-4);animation:channel-progress 17.5s linear infinite}.front-channel[data-paused="true"] .front-channel-progress>span{animation-play-state:paused}.front-channel[data-selected="true"] .front-channel-progress>span{width:100%;animation:none;background:linear-gradient(90deg,var(--a-4),color-mix(in oklch,var(--a-4) 36%,var(--surface-card)))}
+.front[data-engaged="true"] .front-suggestions:has(.front-channel[data-selected="true"]){opacity:1;transform:translateY(0)}
+@keyframes channel-travel{to{transform:translateX(-50%)}}@keyframes channel-progress{to{transform:translateX(300%)}}@keyframes channel-beat{50%{opacity:.32;transform:scale(.65)}}
+@media(max-width:640px){.front-channel-head{padding:8px 10px}.front-channel-title{font-size:9px}.front-channel-item{width:225px}.front-channel-track{animation-duration:78s}}
+@media(prefers-reduced-motion:reduce){.front-channel-track,.front-channel-progress>span,.front-channel-title i{animation:none}.front-channel-window{overflow-x:auto;mask-image:none}.front-channel-track{transform:none}}

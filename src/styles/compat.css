@@ -1,0 +1,71 @@
+/* ============================================================================
+   Compatibility bridge.
+
+   The previous build's component CSS references its own token names. Rather
+   than rewrite 60KB of selectors at once, those names are redefined here in
+   terms of the new ramp, so the whole app adopts the new palette, type and
+   elevation immediately and each screen can then be rebuilt properly.
+
+   This file is deleted once legacy.css is gone.
+   ========================================================================== */
+
+:root {
+  --background: var(--surface-app);
+  --foreground: var(--ink);
+  --card: var(--surface-card);
+  --popover: var(--surface-overlay);
+
+  --primary: var(--a-4);
+  --primary-foreground: oklch(0.995 0.001 262);
+  --secondary: var(--n-3);
+  --muted: var(--n-3);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--n-3);
+  --accent-foreground: var(--ink);
+  --destructive: var(--bad-solid);
+
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--a-4);
+
+  --accent-color: var(--a-6);
+  --highlight: var(--a-1);
+  --text-muted: var(--ink-muted);
+  --text-soft: var(--ink-dim);
+  --subtle-surface: var(--surface-sunken);
+
+  /* The dark left rail is a holdover and reads as generic; it stays dark only
+     until the shell is rebuilt, but it is re-toned onto the neutral hue so it
+     belongs to the same family as everything else. */
+  --sidebar: oklch(0.225 0.012 255);
+  --sidebar-line: oklch(0.949 0.007 255 / 0.10);
+
+  --success: var(--ok-solid);
+  --warning: var(--warn-solid);
+  --danger: var(--bad-solid);
+  --chart-muted: var(--n-7);
+
+  --shadow: var(--elev-1);
+  --floating-shadow: var(--elev-4);
+}
+
+:root.dark,
+:root[data-theme="dark"] {
+  --primary-foreground: oklch(0.145 0.008 262);
+  --sidebar: var(--surface-card);
+  --sidebar-line: var(--line);
+}
+
+/* The old reset put a 1px press translate on every button including nav links,
+   and a 2px/3px outline ring. base.css supersedes both; these are the pieces
+   of it that were worth keeping. */
+button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+button, input, textarea, select { font-family: inherit; font-size: inherit; }
+svg { stroke-width: 1.65; flex-shrink: 0; }
+code { font-family: var(--font-mono); font-feature-settings: "zero" 1; }
+
+/* Legacy h2 was 16px with -.025em, which is both too small to lead a section
+   and over-tracked for its size. The ramp governs now. */
+h2 { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.015em; }
