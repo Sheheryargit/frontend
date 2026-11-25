@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-nvm use          # Node 20.19+
+nvm use          # Node 26
 npm install
 npm run dev
 ```

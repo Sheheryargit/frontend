@@ -49,7 +49,7 @@ read as a zero.
 
 ## Quickstart
 
-Requires **Node 20.19+** (or 22.12+). See [`.nvmrc`](.nvmrc).
+Requires **Node 26**. See [`.nvmrc`](.nvmrc).
 
 ```bash
 npm install
