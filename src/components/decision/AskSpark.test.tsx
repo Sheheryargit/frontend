@@ -13,6 +13,17 @@ describe('recommendation assistant', () => {
     const onSelect = vi.fn();
     const view = render(<AskSpark workspace={workspace} onSelect={onSelect} onSource={onSource} />);
 
+    const launcher = screen.getByRole('button', { name: 'Ask Spark' });
+    expect(launcher).toHaveAttribute('aria-expanded', 'false');
+
+    await user.hover(launcher);
+    expect(launcher).toHaveAttribute('aria-expanded', 'true');
+    await user.unhover(launcher);
+    expect(launcher).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(launcher);
+    await user.unhover(launcher);
+    expect(launcher).toHaveAttribute('aria-expanded', 'true');
     const panel = screen.getByRole('complementary', { name: 'Ask Spark' });
     expect(within(panel).getByRole('textbox', { name: 'Ask Spark a question' })).toBeVisible();
     await user.click(within(panel).getByRole('button', { name: 'How could we lower cost?' }));
@@ -31,6 +42,11 @@ describe('recommendation assistant', () => {
 
     await user.type(within(panel).getByRole('textbox', { name: 'Ask Spark a question' }), 'Why is ROI unavailable?{Enter}');
     expect(await within(panel).findByText(/cannot give a defensible ROI forecast/)).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    expect(launcher).toHaveFocus();
+    expect(launcher).toHaveAttribute('aria-expanded', 'false');
+
+    await user.keyboard('{Enter}');
     expect(within(panel).getByText('How could we lower cost?')).toBeVisible();
   });
 });

@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowUp, ArrowUpRight, Database, Maximize2, Users, Wallet } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, ChevronUp, Database, Maximize2, Users, Wallet, X } from 'lucide-react';
 import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -49,21 +49,28 @@ export function AskSpark({ workspace, onSelect, onSource }: Props) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [pending, setPending] = useState<Turn | null>(null);
   const [phase, setPhase] = useState('');
-  const [showJump, setShowJump] = useState(false);
+  const [mode, setMode] = useState<'closed' | 'preview' | 'pinned'>('closed');
+  const open = mode !== 'closed';
+  const dock = useRef<HTMLDivElement>(null);
+  const launcher = useRef<HTMLButtonElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const composer = useRef<HTMLFormElement>(null);
   const transcript = useRef<HTMLDivElement>(null);
   const sequence = useRef(0);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  useEffect(() => {
-    const element = composer.current;
-    if (!element || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(([entry]) => setShowJump(!entry.isIntersecting),
-      { rootMargin: '-60px 0px -16px 0px', threshold: 0.6 });
-    observer.observe(element);
-    return () => observer.disconnect();
+  const dismiss = useCallback(() => {
+    if (dock.current?.contains(document.activeElement)) launcher.current?.focus();
+    setMode('closed');
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape' && !event.defaultPrevented) dismiss();
+    }
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [open, dismiss]);
 
   useEffect(() => {
     const stream = transcript.current;
@@ -93,90 +100,100 @@ export function AskSpark({ workspace, onSelect, onSource }: Props) {
     ];
   }
 
-  return (
-    <aside className="spark-assistant" data-tour="assistant" aria-labelledby="spark-assistant-title">
-      <header className="spark-assistant-head">
-        <FlybuysAgentMark size="orbit" active={Boolean(pending)} />
-        <div>
-          <h2 id="spark-assistant-title">Ask Spark</h2>
-          <p>Recommendation assistant</p>
-        </div>
-        <span className="spark-assistant-scope">Demo evidence</span>
-      </header>
-
-      {(turns.length > 0 || pending) ? (
-        <div className="spark-assistant-stream" role="log" aria-label="Questions and answers"
-          tabIndex={0} ref={transcript}>
-          {turns.map(({ id, question, version, response }) => (
-            <div className="spark-assistant-turn" key={id}>
-              <p className="spark-assistant-question">{question}</p>
-              <motion.div className="spark-assistant-answer"
-                initial={still ? false : { opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18, ease: ease.out }}>
-                <p>{response.text}</p>
-                {version !== workspace.configVersion && (
-                  <small className="spark-assistant-context">Based on a previous direction</small>
-                )}
-                <div className="spark-assistant-actions">
-                  {response.action && version === workspace.configVersion && (
-                    <Button variant="outline" size="sm"
-                      onClick={() => onSelect(response.action!.audienceId, response.action!.offerId, response.action!.level)}>
-                      {response.action.label}<ArrowUpRight size={14} />
-                    </Button>
-                  )}
-                  {response.source && (
-                    <Button variant="ghost" size="sm" onClick={() => onSource(response.source!)}>
-                      <Database size={14} />Inspect source
-                    </Button>
-                  )}
-                </div>
-              </motion.div>
+  return createPortal(
+    <div ref={dock} className="spark-assistant-dock"
+      onPointerLeave={() => setMode(current => current === 'preview' ? 'closed' : current)}>
+      <button ref={launcher} className="spark-assistant-launcher" type="button"
+        data-tour="assistant" aria-expanded={open} aria-controls="spark-assistant-panel"
+        onPointerEnter={event => {
+          if (event.pointerType === 'mouse') setMode(current => current === 'closed' ? 'preview' : current);
+        }}
+        onClick={() => setMode(current => current === 'pinned' ? 'closed' : 'pinned')}>
+        <FlybuysAgentMark active={Boolean(pending)} />
+        <span>Ask Spark</span>
+        <ChevronUp size={15} aria-hidden="true" />
+      </button>
+      <div className="spark-assistant-flyout" data-open={open} aria-hidden={!open}
+        {...(!open && { inert: '' })}
+        onPointerDown={() => setMode('pinned')} onFocusCapture={() => setMode('pinned')}>
+        <aside id="spark-assistant-panel" className="spark-assistant" aria-labelledby="spark-assistant-title">
+          <header className="spark-assistant-head">
+            <FlybuysAgentMark size="orbit" active={Boolean(pending)} />
+            <div>
+              <h2 id="spark-assistant-title">Ask Spark</h2>
+              <p>Recommendation assistant</p>
             </div>
-          ))}
-          {pending && (
-            <div className="spark-assistant-turn">
-              <p className="spark-assistant-question">{pending.question}</p>
-              <div className="spark-assistant-activity">
-                <FlybuysAgentMark size="avatar" active />
-                <span role="status">{phase}</span>
+            <span className="spark-assistant-scope">Demo evidence</span>
+            <Button variant="ghost" size="icon-sm" type="button"
+              aria-label="Close Ask Spark" onClick={dismiss}><X size={16} /></Button>
+          </header>
+
+          {(turns.length > 0 || pending) ? (
+            <div className="spark-assistant-stream" role="log" aria-label="Questions and answers"
+              tabIndex={0} ref={transcript}>
+              {turns.map(({ id, question, version, response }) => (
+                <div className="spark-assistant-turn" key={id}>
+                  <p className="spark-assistant-question">{question}</p>
+                  <motion.div className="spark-assistant-answer"
+                    initial={still ? false : { opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.18, ease: ease.out }}>
+                    <p>{response.text}</p>
+                    {version !== workspace.configVersion && (
+                      <small className="spark-assistant-context">Based on a previous direction</small>
+                    )}
+                    <div className="spark-assistant-actions">
+                      {response.action && version === workspace.configVersion && (
+                        <Button variant="outline" size="sm"
+                          onClick={() => onSelect(response.action!.audienceId, response.action!.offerId, response.action!.level)}>
+                          {response.action.label}<ArrowUpRight size={14} />
+                        </Button>
+                      )}
+                      {response.source && (
+                        <Button variant="ghost" size="sm" onClick={() => onSource(response.source!)}>
+                          <Database size={14} />Inspect source
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+              ))}
+              {pending && (
+                <div className="spark-assistant-turn">
+                  <p className="spark-assistant-question">{pending.question}</p>
+                  <div className="spark-assistant-activity">
+                    <FlybuysAgentMark size="avatar" active />
+                    <span role="status">{phase}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="spark-assistant-intro">
+              <p>Ask about this audience, the reward cost, or the evidence behind the recommendation.</p>
+              <div className="spark-assistant-prompts" aria-label="Suggested questions">
+                {prompts.map(({ label, Icon }) => (
+                  <button type="button" key={label} onClick={() => ask(label)}>
+                    <Icon size={15} aria-hidden="true" />
+                    <span>{label}</span>
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </button>
+                ))}
               </div>
             </div>
           )}
-        </div>
-      ) : (
-        <div className="spark-assistant-intro">
-          <p>Ask about this audience, the reward cost, or the evidence behind the recommendation.</p>
-          <div className="spark-assistant-prompts" aria-label="Suggested questions">
-            {prompts.map(({ label, Icon }) => (
-              <button type="button" key={label} onClick={() => ask(label)}>
-                <Icon size={15} aria-hidden="true" />
-                <span>{label}</span>
-                <ArrowUpRight size={13} aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
-      <form ref={composer} className="spark-assistant-form"
-        onSubmit={event => { event.preventDefault(); ask(draft); }}>
-        <Input id="spark-recommendation-question" value={draft}
-          onChange={event => setDraft(event.target.value)} aria-label="Ask Spark a question"
-          placeholder={turns.length ? 'Ask a follow-up…' : 'Ask about this recommendation…'} />
-        <Button size="icon-sm" aria-label="Send question" type="submit" disabled={!draft.trim() || Boolean(pending)}>
-          <ArrowUp size={17} />
-        </Button>
-      </form>
-      {showJump && createPortal(
-        <Button className="spark-assistant-jump" onClick={() => {
-          const question = composer.current?.querySelector('input');
-          question?.focus({ preventScroll: true });
-          question?.scrollIntoView({ block: 'center', behavior: still ? 'instant' : 'smooth' });
-        }}>
-          <FlybuysAgentMark />Ask Spark
-        </Button>,
-        document.body,
-      )}
-    </aside>
+          <form className="spark-assistant-form"
+            onSubmit={event => { event.preventDefault(); ask(draft); }}>
+            <Input id="spark-recommendation-question" value={draft}
+              onChange={event => setDraft(event.target.value)} aria-label="Ask Spark a question"
+              placeholder={turns.length ? 'Ask a follow-up…' : 'Ask about this recommendation…'} />
+            <Button size="icon-sm" aria-label="Send question" type="submit" disabled={!draft.trim() || Boolean(pending)}>
+              <ArrowUp size={17} />
+            </Button>
+          </form>
+        </aside>
+      </div>
+    </div>,
+    document.body,
   );
 }

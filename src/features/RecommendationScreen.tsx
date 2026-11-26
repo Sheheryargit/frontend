@@ -94,11 +94,15 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
 
   return (
     <div className="rec rec-layout">
-      <div className="rec-assistant-rail">
-        <AskSpark key={ws.revision} workspace={ws} onSelect={selectWithPulse} onSource={onSource} />
-      </div>
+      <DecisionAtlas
+        workspace={ws}
+        mode="explore"
+        canAccept={canAccept}
+        onSelect={selectWithPulse}
+        onSource={onSource}
+        onReview={onReview}
+      />
 
-      <div className="rec-main">
       {stale && (
         <Notice tone="warning">
           <strong>The brief has changed</strong>
@@ -166,15 +170,6 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
           </div>
         </div>
       </motion.section>
-
-      <DecisionAtlas
-        workspace={ws}
-        mode="explore"
-        canAccept={canAccept}
-        onSelect={selectWithPulse}
-        onSource={onSource}
-        onReview={onReview}
-      />
 
       {/* ---- explore ---- */}
       <Tabs value={tab} onValueChange={setTab} className="rec-tabs" id="recommendation-exploration" data-tour="exploration">
@@ -274,7 +269,7 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
         </TabsContent>
       </Tabs>
 
-      </div>
+      <AskSpark key={ws.revision} workspace={ws} onSelect={selectWithPulse} onSource={onSource} />
 
       <Dialog open={record !== null} onOpenChange={open => { if (!open) setRecord(null); }}>
         <DialogContent>
