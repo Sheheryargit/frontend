@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ArrowUpRight, CircleAlert, ScanSearch, Sparkles } from 'lucide-react';
+import { ArrowUpRight, CircleAlert, ScanSearch, Check } from 'lucide-react';
 import type { Brief } from '../../data';
 import { money, number } from '../../model';
 import { viability } from '../../lib/discovery';
@@ -19,7 +19,7 @@ export function BriefViability({ brief }: { brief: Brief }) {
       animate={{ opacity: 1, height: 'auto', y: 0 }}
       exit={{ opacity: 0, height: 0, y: still ? 0 : -8 }}
       transition={{ duration: still ? 0 : .42, ease: [0.19, 1, 0.22, 1] }}>
-      <span className="brief-viability-icon">{result.verdict === 'viable' ? <Sparkles size={17}/> : <CircleAlert size={17}/>}</span>
+      <span className="brief-viability-icon">{result.verdict === 'viable' ? <Check size={17}/> : <CircleAlert size={17}/>}</span>
       <div><small><ScanSearch size={11}/> LIVE VIABILITY PREFLIGHT · DEMO RULES</small>
         <strong>{result.verdict === 'viable' ? 'An audience is possible' : 'A constraint needs attention'}</strong>
         <p>{message}</p>

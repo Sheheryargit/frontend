@@ -20,3 +20,6 @@ React Flow was studied for graph behavior but is not imported; shadcn primitives
 locally customized rather than using the default theme.
 
 Private discovery notes and extracted third-party reference frames are intentionally excluded from the public source repository. No production data or API is connected.
+
+
+Flybuys visual implementation: see root `design.me`. Corporate palette, Public Sans and the vector wordmark were inspected in the publicly filed FY2023 statement at https://modernslaveryregister.gov.au/statements/1mCb5LX0VIbkB40/pdf/. The Unpacked reference was used only to distinguish sub-brand styling from parent-brand styling. Current consumer-site token verification was unavailable because the official site returned a blank document. Dark colors and richer agent scenes are documented product adaptations. No PDF font binaries or third-party reference frames are redistributed.

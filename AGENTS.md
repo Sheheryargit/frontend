@@ -4,7 +4,7 @@ These rules apply to any coding agent or editor working in this repository.
 
 ## Read first
 
-Read `docs/ARCHITECTURE.md`, `docs/DESIGN.md`, `docs/AGENT.md` and `docs/DECISIONS.md` before changing a screen, data flow or visual style. Preserve the current dark blue-green identity, dotted canvas, mint activity signals, gold focus state, type hierarchy and measured motion across brief, recommendation and review.
+Read `docs/ARCHITECTURE.md`, `docs/DESIGN.md`, `docs/AGENT.md` and `docs/DECISIONS.md` before changing a screen, data flow or visual style. Follow root `design.me` for the Flybuys visual identity: verified blue, Public Sans, original wordmark, blue-tinted surfaces and purposeful motion across brief, recommendation and review. The user-authorized rebrand supersedes the former mineral palette.
 
 ## Boundaries
 

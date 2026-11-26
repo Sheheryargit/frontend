@@ -10,7 +10,7 @@
 .front-channel[data-selected="true"] .front-channel-title i{animation:channel-beat 1.2s ease-in-out infinite}
 .front-channel-head>button{display:flex;align-items:center;gap:5px;flex:none;padding:4px 6px;border-radius:4px;color:var(--ink-dim);font:550 10px var(--font-mono)}
 .front-channel-head>button:hover:not(:disabled){color:var(--ink);background:var(--surface-raised)}.front-channel-head>button:disabled{opacity:.45}
-.front-channel-window{position:relative;overflow:hidden;padding:8px 0;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.front-channel-window{position:relative;overflow:hidden;padding:8px 0;mask-image:linear-gradient(90deg,transparent,var(--fb-depth) 4%,var(--fb-depth) 96%,transparent)}
 .front-channel-track{display:flex;width:max-content;animation:channel-travel 70s linear infinite;will-change:transform}
 .front-channel[data-paused="true"] .front-channel-track{animation-play-state:paused}
 .front-channel-item{display:flex;align-items:center;gap:10px;flex:none;width:252px;min-height:55px;margin-right:8px;padding:8px 11px;border:1px solid var(--line);border-radius:7px;background:var(--surface-raised);color:var(--ink);text-align:left;transition:border-color .18s var(--ease),background .18s var(--ease),transform .18s var(--ease),box-shadow .18s var(--ease)}

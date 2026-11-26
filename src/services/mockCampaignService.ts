@@ -31,11 +31,12 @@ const delay = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve, 
 /** Replace this adapter with SSE or your API. Screens consume structured fields and run events. */
 export const mockCampaignService: CampaignGateway = {
   async run(onEvent: (event: RunEvent) => void, signal: AbortSignal, fail = false) {
+    const dwell = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 90 : 380;
     for (let i=0; i<runSteps.length; i++) {
       onEvent({index:i,detail:runPulses[i][0],progress:i*20+3});
-      await delay(1150,signal);
+      await delay(dwell,signal);
       onEvent({index:i,detail:runPulses[i][1],progress:i*20+12});
-      await delay(1150,signal);
+      await delay(dwell,signal);
       if(fail && i===2) throw new Error('The offer data source did not respond. Your brief has been saved. Retry this simulation to continue.');
     }
     onEvent({index:4,detail:'Resolving the decision network',progress:100});

@@ -49,7 +49,7 @@
 [data-slot="button"][data-variant="ghost"]:hover:not(:disabled) { --btn-bg: var(--n-3); --btn-fg: var(--ink); }
 
 [data-slot="button"][data-variant="destructive"] {
-  --btn-bg: var(--bad-solid); --btn-fg: #fff;
+  --btn-bg: var(--bad-solid); --btn-fg: var(--fb-text);
 }
 [data-slot="button"][data-variant="destructive"]:hover:not(:disabled) { filter: brightness(0.94); }
 

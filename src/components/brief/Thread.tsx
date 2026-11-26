@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import type { Message } from '../../types';
 import type { BriefKey } from '../../data';
 import { briefFields } from '../../data';
@@ -49,7 +50,7 @@ export function Thread({ messages, thinking, added, suggestions, onSuggestion, c
             transition={{ duration: dur.base, ease: ease.signature }}
           >
             {m.role === 'assistant' && (
-              <span className="msg-avatar"><Sparkles /></span>
+              <FlybuysAgentMark size="avatar" />
             )}
             <div className="msg-body">
               {m.role === 'assistant' && <span className="msg-who">Brief agent</span>}
@@ -90,7 +91,7 @@ export function Thread({ messages, thinking, added, suggestions, onSuggestion, c
               exit={{ opacity: 0, y: still ? 0 : -6 }}
               transition={{ duration: 0.2, ease: ease.out }}
             >
-              <span className="msg-avatar"><Sparkles /></span>
+              <FlybuysAgentMark size="avatar" active />
               <div className="msg-body">
                 <span className="typing" aria-label="Brief agent is typing">
                   <i /><i /><i />

@@ -1,0 +1,78 @@
+# Flybuys visual implementation contract
+
+This file is the source of truth for visual changes. Product workflows, terminology, layout, data, services and agent timing remain governed by the existing architecture and product decisions.
+
+## Provenance and confidence
+
+The main reference is Flybuys' publicly filed FY2023 Modern Slavery Statement:
+https://modernslaveryregister.gov.au/statements/1mCb5LX0VIbkB40/pdf/
+Its PDF drawing operators use RGB (0, .486, .761) for blue, (.059, .294, .569) for navy, (.255, .725, 1) for sky, and (.914, .969, .996) for pale blue. The embedded family is Public Sans (Thin and Thin Italic). The wordmark in public/brand/flybuys.svg is extracted from its original vector outlines without redrawing.
+
+Secondary reference: https://register.flybuys.com.au/cdn/unpacked/docs/Unpacked%20Nappy%20Brand%20Case%20Study.pdf uses Helvetica Neue Extended, electric blue and orange for the Unpacked sub-brand. Those are NOT applied as the parent brand's primary palette.
+
+The official consumer website https://www.flybuys.com.au redirects to https://experience.flybuys.com.au and returned a blank document during inspection. The official app listing https://apps.apple.com/au/app/flybuys/id377842707 confirms a refreshed logo in its release notes, but does not publish a token or font specification. No current private brand manual or proprietary font kit was available. This implementation follows verified public corporate materials; it is not certified as the latest internal Flybuys design system.
+
+## Colors
+
+Source palette (rounded from published PDF RGB):
+- Flybuys blue: #007CC2, RGB 0 124 194. Primary brand and CTA.
+- Navy: #0F4B91, RGB 15 75 145. Focus and supporting data series.
+- Sky: #41B9FF, RGB 65 185 255. Live signals and dark-mode CTA.
+- Ice: #E9F7FE, RGB 233 247 254. Supporting fields and surfaces.
+
+Product adaptations (not claimed official tokens):
+- Light canvas #F2F9FD, RGB 242 249 253; white card #FFFFFF.
+- Light ink #15384E, RGB 21 56 78; muted #486779, RGB 72 103 121; supporting #58778D, RGB 88 119 141.
+- Light line #C2D9E8, RGB 194 217 232; strong line #9FBFD3, RGB 159 191 211.
+- Dark canvas #071A2C, RGB 7 26 44; card #102B43, RGB 16 43 67; raised #173750, RGB 23 55 80.
+- Dark ink #ECF7FF, RGB 236 247 255; muted #BBD3E3, RGB 187 211 227; supporting #94B4CA, RGB 148 180 202.
+- Dark line #30546F, RGB 48 84 111; strong #466C87, RGB 70 108 135.
+- Success light #187451 (24 116 81), dark #74D4AC (116 212 172).
+- Warning light #A66B12 (166 107 18), dark #ECC36E (236 195 110).
+- Error light #B53C42 (181 60 66), dark #FFB3B8 (255 179 184).
+
+Use --surface-*, --ink*, --line*, --a-* and --ok/--warn/--bad variables in component CSS. Legacy scene literals have been migrated to --fb-depth, --fb-text, --fb-border, --fb-signal, --fb-focus, --fb-series, --fb-success, --fb-error and --fb-shadow. Alpha variants use color-mix. All theme-specific roles are authored in src/styles/flybuys.css, imported last. Do not add component hex literals.
+
+## Typography
+
+Public Sans, with Arial/sans-serif fallbacks, is the default body and display family. The family is publicly available; no embedded commercial PDF font is redistributed. Load weights 300–700 from Google Fonts. Keep existing scale and layout metrics: main page titles 28–32px, section titles 20–24px, component headings 14–18px, body 13–14px, secondary labels 10–12px. The landing headline scales from 32 to 55px. Use 550/600 heading weights and 350/400 supporting weights. Body line height 1.45–1.6. Preserve tabular numerals and Geist Mono for technical labels. Existing user-selectable type preferences remain available as accessibility/personalization exceptions. The brand revision resets palette and type to blue and sans once, using spark-flybuys-brand-v1; subsequent selections are retained.
+
+## Logo
+
+Use the extracted original SVG, never typeset an imitation. Preserve its 93:32 aspect ratio and an empty margin of at least 1/4 its height. Use blue on light surfaces, white on dark. The existing rail slot contains the wordmark; the product name Spark is retained. At collapsed width show the full logo scaled to fit, never crop its letters. Keep the wordmark still and preserve its proportions. Agent surfaces can frame it with a glow and move a separate orbit around it during processing. Use alt text Flybuys. The logo remains a Flybuys trademark; application source licensing does not grant trademark rights.
+
+## Components and states
+
+Preserve all current dimensions, composition and navigation. White/light-blue or independently authored navy surfaces replace the prior mineral scheme. Buttons use existing radii and sizes, blue solid primary action, transparent secondary with fine border, semantic danger action. Primary foreground is white in light and dark navy in dark. Hover uses --a-5; pressed retains the existing motion. Disabled controls reduce emphasis and keep the disabled cursor. Inputs have --surface-inset, --line and a 2px offset blue focus ring. Selects, tabs, command menus, tooltips and dialogs use the same surfaces and ink. Selected rows use a blue tint and an explicit marker. Busy states retain their existing label and spinner/progress feedback.
+
+Radii: 4px small, 6px controls, 8px medium, 12px cards, 16px major panels. Existing composer radii are preserved. Elevation is a navy-tinted shadow: 1px/3px at 6%, 4px/18px at 8%, 10px/30px at 10%, 18px/48px at 14%. No decorative heavy shadows. Keep the dotted field at low opacity so chart/grid content dominates.
+
+Lucide remains the dominant icon family at existing sizes and 1.65–1.8 stroke. Existing detail colors now stay in the blue family; state glyphs and text communicate completeness. No new illustrations or components.
+
+## Charts and motion
+
+Series in light: #007CC2, #0F4B91, #28838F, #B06A12, #B53C42, #647F9B. Dark: #41B9FF, #96D8FF, #6ACBD2, #ECC36E, #FFB3B8, #92B7E5. These supporting series are product adaptations. Use a 14–16% blue uncertainty band and 9–10% grid. Budget ceiling is semantic error. Preserve low, central, high and missing values. SVG paths and nodes keep their existing geometry; blue activity packets replace mint/gold. No animation may imply a real source connection.
+
+Shared signature curve: cubic-bezier(.19,1,.22,1). Hover 100–150ms, controls 150–220ms, panel handoff 220–550ms as currently implemented. Pacing uses the existing appearance preference and the operating timings described below. Transform/opacity communicate transition; travel and loops stop under prefers-reduced-motion while labels remain. Do not change business or timing state to restyle motion.
+
+## Accessibility and maintenance
+
+Target WCAG AA: body text 4.5:1, large text and meaningful graphical elements 3:1. Decorative grids may be lower. Blue/white CTA is approximately 4.5:1; use the darker --a-6 for small blue text on tinted fields. Every control has focus-visible feedback and accessible names. Never use hue alone. Inspect keyboard focus, disabled, error, selected and loading states in both themes. Treat optional palette/type controls as existing personalization; no workflow is removed.
+
+Before merging run npm run typecheck, npm test and npm run build; inspect landing, capture, recommendation, review, source dialog, settings, feedback and command menu at desktop and compact widths. Update this file with any visual token change. Keep src/services, src/model.ts, src/data.ts and src/types.ts unchanged for visual-only work.
+
+## Richness refinement
+
+One polka-dot grammar is shared by the app field, decision network, scenario plot, agent scene and processing grid: 20px spacing, 0.8px radius, blue at 22% in light and sky at 20% in dark. Dense document surfaces remain solid. `--fb-dot-field`, `--fb-dot-size`, `--fb-panel`, `--fb-glint` and `--fb-inset` centralize this treatment. Light mode uses white-to-ice depth with restrained shadows; dark mode uses independently authored navy surfaces and a low-opacity sky glint. These are product adaptations.
+
+Focused nodes breathe at 3.8s through their outer ring only; cores and SVG edge anchors remain stable. Existing transport packets, scenario plot interactions, thinking orbs and staged agent transitions keep their behavior. Blue denotes activity; warning/error semantics remain distinct. Primary buttons use a shallow blue lighting gradient and a quick hover lift in light, without changing control dimensions. Composer focus adds a blue halo that keeps the typed intent visually dominant. Reduced motion disables the breathing ring. No new workflow, component or dependency is introduced by this pass.
+
+## Landing and capture pacing
+
+The landing page introduces the campaign task in its headline. The agent tile orbits on engagement, and field chips show details detected in a draft. The idea channel retains pause and keyboard behavior. Sample stays available beside the composer.
+
+Use event-driven stage changes. The default scripted capture uses 145ms per sample field and 170ms per extracted field, scaled by the existing pace setting. Active steps use a blue underline, and completed steps use a check icon. Hold the default dissolve for 420ms across the brief handoff. The mock recommendation streams ten events at 380ms intervals and starts loading its screen during the run. Under reduced motion, compress waits and remove the orbit and handoff.
+
+## Agent wordmark
+
+Use `FlybuysAgentMark` for agent avatars, action marks, activity status and processing headers. The campaign capture diagram uses the same SVG asset in its source node. The blue satellite orbits while work is active. Completed and interrupted states keep the static wordmark, and reduced motion renders a stationary orbit. Phase, success and warning icons continue to identify their own states.

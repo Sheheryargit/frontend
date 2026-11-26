@@ -43,7 +43,7 @@ const DENSITIES = [
   { id: 'comfortable', name: 'Comfortable' },
 ] as const;
 
-const KEY = { palette: 'spark-palette', type: 'spark-type', density: 'spark-density', pace: 'spark-pace', handoff: 'spark-handoff' };
+const KEY = { palette: 'spark-palette-flybuys-v1', type: 'spark-type-flybuys-v1', density: 'spark-density', pace: 'spark-pace', handoff: 'spark-handoff' };
 
 export const HANDOFFS = [
   { id: 'dissolve', name: 'Dissolve', note: 'Neutral field, held, then lifted' },
@@ -60,11 +60,20 @@ const PACES = [
 
 /** Applied to <html> so every token, in both themes, follows. */
 export function useAppearance() {
-  const [palette, setPalette] = useState(() => localStorage.getItem(KEY.palette) || 'bone-clay');
-  const [type, setType] = useState(() => localStorage.getItem(KEY.type) || 'editorial');
+  const [palette, setPalette] = useState(() => localStorage.getItem(KEY.palette) || 'ice-blue');
+  const [type, setType] = useState(() => localStorage.getItem(KEY.type) || 'grotesk');
   const [density, setDensity] = useState(() => localStorage.getItem(KEY.density) || 'default');
   const [tempo, setTempo] = useState(() => localStorage.getItem(KEY.pace) || 'standard');
   const [handoff, setHandoff] = useState(() => localStorage.getItem(KEY.handoff) || 'dissolve');
+
+  // Adopt the new visual defaults once; later personal choices remain intact.
+  useEffect(() => {
+    if (!localStorage.getItem('spark-flybuys-brand-v1')) {
+      setPalette('ice-blue');
+      setType('grotesk');
+      localStorage.setItem('spark-flybuys-brand-v1', '1');
+    }
+  }, []);
 
   useEffect(() => {
     const el = document.documentElement;

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { PHASES } from '../../features/agentPhases';
@@ -37,7 +38,6 @@ type Props = {
 export function ProcessingDialog({ open, phase, detail, captured, items, brief, active, collapsing = false, ready = false, onGenerate, onCancel }: Props) {
   const still = useReducedMotion();
   const idx = Math.max(0, Math.min(phase, PHASES.length - 1));
-  const Icon = PHASES[idx].icon;
   const pct = captured / 8;
 
   return (
@@ -56,54 +56,35 @@ export function ProcessingDialog({ open, phase, detail, captured, items, brief, 
                 className="processing-fill" cx="30" cy="30" r="26"
                 strokeDasharray={RING}
                 animate={{ strokeDashoffset: RING * (1 - pct) }}
-                transition={{ duration: 0.76, ease: ease.signature }}
+                transition={{ duration: still ? 0 : 0.22, ease: ease.signature }}
               />
             </svg>
-            <span className="processing-orb">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.5, rotate: still ? 0 : -25 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                >
-                  <Icon />
-                </motion.span>
-              </AnimatePresence>
-              {!still && <i className="processing-halo" />}
-            </span>
+            <FlybuysAgentMark size="orbit" active={!collapsing && !ready} className="processing-agent-mark" />
           </div>
 
           <div className="processing-text">
-            <span className="processing-eyebrow"><Sparkles />Brief agent</span>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.strong
-                key={detail || PHASES[idx].id}
-                initial={{ opacity: 0, y: still ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: still ? 0 : -8 }}
-                transition={{ duration: 0.22, ease: ease.signature }}
-              >
-                {collapsing ? 'Brief assembled' : detail || PHASES[idx].cue}
-              </motion.strong>
-            </AnimatePresence>
+            <span className="processing-eyebrow"><FlybuysAgentMark />Brief agent</span>
+            <strong role="status">{collapsing ? 'Brief assembled' : detail || PHASES[idx].cue}</strong>
             <span className="processing-count num">{captured} of 8 mapped</span>
           </div>
         </div>
 
         <ol className="processing-phases">
-          {PHASES.map((p, i) => (
-            <li key={p.id} data-state={i < idx ? 'done' : i === idx ? 'live' : 'ahead'}>
-              <i />{p.label}
-            </li>
-          ))}
+          {PHASES.map((p, i) => {
+            const PhaseIcon = i < idx ? Check : p.icon;
+            return (
+              <li key={p.id} aria-current={i === idx ? 'step' : undefined}
+                data-state={i < idx ? 'done' : i === idx ? 'live' : 'ahead'}>
+                <PhaseIcon size={14} aria-hidden="true" />{p.label}
+              </li>
+            );
+          })}
         </ol>
 
         <motion.div
           className="processing-stage"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ duration: dur.base, ease: ease.out, delay: 0.1 }}
+          transition={{ duration: dur.base, ease: ease.out }}
         >
           <ProcessingPipeline brief={brief} active={active} captured={captured} phaseIndex={idx} collapsing={collapsing} />
         </motion.div>
@@ -132,7 +113,7 @@ export function ProcessingDialog({ open, phase, detail, captured, items, brief, 
               initial={{ opacity: 0, y: still ? 0 : 14 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.46, ease: ease.signature }}
+              transition={{ duration: 0.21, ease: ease.signature }}
             >
               <span className="processing-ready-mark"><Check /></span>
               <div>
@@ -140,7 +121,7 @@ export function ProcessingDialog({ open, phase, detail, captured, items, brief, 
                 <small>All eight details captured and inside scope.</small>
               </div>
               <Button onClick={onGenerate} className="generate-button" data-armed="true">
-                <Sparkles />Generate recommendation
+                <FlybuysAgentMark />Generate recommendation
               </Button>
             </motion.div>
           )}

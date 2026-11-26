@@ -75,6 +75,7 @@ network access; system fallbacks are provided.
 
 | Document | Covers |
 |---|---|
+| [`design.me`](design.me) | Flybuys visual contract, sources, theme tokens and interaction styling |
 | [`AGENTS.md`](AGENTS.md) | Portable rules for any coding agent or editor |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module boundaries, state, data flow and integration path |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Current visual identity, motion and component standards |

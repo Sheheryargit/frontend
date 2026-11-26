@@ -1,6 +1,7 @@
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { AlertCircle, Check, ChevronRight, Loader2, Minus, Pencil, Sparkles } from 'lucide-react';
+import { AlertCircle, Check, ChevronRight, Loader2, Minus, Pencil } from 'lucide-react';
 import { Button } from '../ui/button';
 import { briefFields } from '../../data';
 import type { Brief, BriefKey } from '../../data';
@@ -148,7 +149,7 @@ export function BriefPanel({
                   </AnimatePresence>
                   {value && !busy && (
                     <span className="row-origin">
-                      {fieldOrigins[f.key] === 'edited' ? <Pencil /> : <Sparkles />}
+                      {fieldOrigins[f.key] === 'edited' ? <Pencil /> : <FlybuysAgentMark />}
                     </span>
                   )}
                   <span className="row-mark">
@@ -175,7 +176,7 @@ export function BriefPanel({
         <Button variant="ghost" size="sm" disabled={working} onClick={onSample}>Load sample</Button>
         <Button onClick={onGenerate} disabled={!valid || working}
           data-armed={valid && !working ? 'true' : undefined} className="generate-button">
-          <Sparkles />Generate recommendation
+          <FlybuysAgentMark />Generate recommendation
         </Button>
         <span className="board-hint">
           {valid ? 'Checks audience, budget and evidence constraints.'

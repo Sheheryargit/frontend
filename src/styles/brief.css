@@ -997,7 +997,7 @@
     linear-gradient(oklch(from var(--a-4) l c h / 0.16) 1px, transparent 1px),
     linear-gradient(90deg, oklch(from var(--a-4) l c h / 0.16) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 62%);
+  mask-image: radial-gradient(circle at 50% 50%, var(--fb-depth) 0%, transparent 62%);
 }
 
 /* ============================================================================

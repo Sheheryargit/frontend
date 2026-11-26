@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
-  ArrowUp, Check, ClipboardList, Loader2, MessageSquareText,
+  ArrowUp, Check, ClipboardList,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { FlybuysAgentMark } from '../components/product/FlybuysAgentMark';
 import { Textarea } from '../components/ui/textarea';
 import { Source, Status, Notice } from '../components/product/shared';
 import { briefFields } from '../data';
@@ -14,7 +15,7 @@ import type { SourceKey } from '../services/campaign';
 import { budgetValue } from '../model';
 import { ease } from '../lib/motion';
 import { classify, reply, assumptionFor, wait, detect } from './briefAgent';
-import { hold, FIELD_DWELL, FIELD_DWELL_SAMPLE, READ_DWELL, SETTLE_DWELL } from './agentPhases';
+import { hold, pace, PHASES, FIELD_DWELL, FIELD_DWELL_SAMPLE, READ_DWELL } from './agentPhases';
 import { ProcessingDialog } from '../components/brief/ProcessingDialog';
 import { Handoff, HANDOFF_TIMING } from '../components/brief/Handoff';
 import { BriefPanel } from '../components/brief/BriefPanel';
@@ -56,14 +57,18 @@ export function BriefScreen({
   const [handoffStyle, setHandoffStyle] = useState<HandoffStyle>('dissolve');
   const [justAdded, setJustAdded] = useState<BriefKey[]>([]);
   const [readyToRun, setReadyToRun] = useState(false);
-  const readyRef = useRef(true);
+  const operation = useRef<AbortController | null>(null);
+  const typing = useRef(false);
   /* closeOut runs long after it was defined, so it must not read `ws.brief`
      from its own closure — by then that value predates the capture. */
   const briefRef = useRef(ws.brief);
   briefRef.current = ws.brief;
   const [processingPhase, setProcessingPhase] = useState(0);
   const alive = useRef(true);
-  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  useEffect(() => {
+    alive.current = true;
+    return () => { alive.current = false; operation.current?.abort(); };
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
   // Which detail changed most recently, so the row can acknowledge the edit.
 
@@ -116,201 +121,144 @@ export function BriefScreen({
     setActivity(a => [...a, `${label} captured`].slice(-3));
   };
 
-  async function transmit(): Promise<boolean> {
-    readyRef.current = true;
-    const fromLanding = view === 'landing';
-    setDraft('');
+  // The controller marks ownership of the UI while its local capture is in flight.
+  // A late mock field event after cancellation must not update a newer brief.
+  function beginCapture() {
+    if (operation.current || typing.current || handoff) return;
+    const controller = new AbortController();
+    operation.current = controller;
     setWorking(true);
-    setProcessingPhase(0);
-    setFeed([{ id: 'ingest', label: 'Ingesting your message', state: 'adding' }]);
-    setActivity(['Preparing the campaign intent']);
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    await wait(reduced ? 20 : fromLanding ? 380 : 120);
-    if (!alive.current) return false;
-    setActivity(['Opening the processing view']);
-    await wait(reduced ? 20 : fromLanding ? 480 : 160);
-    if (!alive.current) return false;
-    if (!reduced) {
-      setActivity(['Transmitting campaign intent']);
-      await wait(340);
-      if (!alive.current) return false;
-    }
-    setFeed(f => [
-      ...f.map(i => ({ ...i, state: 'done' as const })),
-      { id: 'read', label: 'Reading for intent and entities', state: 'adding' as const },
-    ]);
-    setProcessingPhase(1);
-    return true;
-  }
-
-  async function send(text = draft) {
-    if (!text.trim() || working) return;
-    const value = text.trim();
-    const messages = [...ws.messages, { role: 'user' as const, text: value }];
-    if (!await transmit()) return;
-    onMessages(messages);
-
-    const turn = classify(value);
-
-    // A question is answered, never filed as a field. The extractor assigns the
-    // first message it sees to `objective`, so asking "why do you need a
-    // budget?" would otherwise become the campaign objective.
-    if (turn.kind === 'question') {
-      setActivity(['Reading your question']);
-      try {
-        setProcessingPhase(1); setPhaseDetail('Reading your question');
-        await hold(READ_DWELL);
-        setProcessingPhase(3); setPhaseDetail('Checking what you asked');
-        await hold(620);
-        setProcessingPhase(4); setPhaseDetail('Composing an answer');
-        await hold(640);
-        if (!alive.current) return;
-        setProcessingPhase(3);
-        await wait(220);
-        if (!alive.current) return;
-        onMessages([...messages, { role: 'assistant', text: reply(turn, ws.brief) }]);
-      } finally { if (alive.current) await closeOut(); }
-      return;
-    }
-
-    // "You decide" is an answer too. Fill the pending detail and say what was
-    // assumed, so an assumption never passes as something the user stated.
-    if (turn.kind === 'defer' && next) {
-      const assumed = assumptionFor(next.key);
-      setActivity([`Assuming a ${briefFields.find(f => f.key === next.key)?.label.toLowerCase()}`]);
-      try {
-        setProcessingPhase(3); setPhaseDetail('Choosing a safe assumption');
-        await hold(640);
-        setProcessingPhase(4); setPhaseDetail('');
-        await hold(420);
-        if (!alive.current) return;
-        if (assumed) {
-          capture(next.key, assumed.value);
-          const after = { ...ws.brief, [next.key]: assumed.value };
-          const following = campaignService.nextQuestion(after);
-          setProcessingPhase(3);
-          await wait(220);
-          if (!alive.current) return;
-          onMessages([...messages, {
-            role: 'assistant',
-            text: `I've assumed ${assumed.value} — ${assumed.because}. Change it on the right if that's wrong.${following ? `\n\n${following.prompt}` : ' That completes the brief.'}`,
-          }]);
-        }
-      } finally { if (alive.current) { setWorking(false); setPhaseDetail(''); advance(); setActiveField(null); } }
-      return;
-    }
-
-    setActivity(['Reading campaign intent']);
-    try {
-      setProcessingPhase(1); setPhaseDetail('Reading for intent and entities');
-      if (!inCanvas) await hold(READ_DWELL);
-      setProcessingPhase(2); setPhaseDetail('Looking for details');
-      if (!inCanvas) await hold(520);
-      let extracted = await campaignService.extract(value, ws.brief, capture, inCanvas ? 0 : FIELD_DWELL);
-      setFeed(f => f.map(i => ({ ...i, state: 'done' as const })));
-      setPhaseDetail('Details mapped');
-      if (!inCanvas) await hold(SETTLE_DWELL);
-      if (!alive.current) return;
-      if (
-        Object.keys(ws.brief).length && next &&
-        !Object.keys(extracted).some(k => extracted[k as BriefKey] !== ws.brief[k as BriefKey])
-      ) {
-        capture(next.key, value);
-        extracted = { ...extracted, [next.key]: value };
-      }
-      setActiveField(null);
-      setProcessingPhase(3); setPhaseDetail('Checking scope and constraints');
-      await hold(inCanvas ? 220 : 680);
-      setProcessingPhase(4); setPhaseDetail('');
-      if (!inCanvas) await hold(540);
-      const q = campaignService.nextQuestion(extracted);
-      if (!alive.current) return;
-      onMessages([...messages, {
-        role: 'assistant',
-        text: q
-          ? `I’ve updated the brief. ${q.prompt}`
-          : 'The brief is complete. Review the details, edit anything you need, then generate the recommendation.',
-      }]);
-    } finally {
-      if (alive.current) { setActiveField(null); await closeOut(); }
-    }
-  }
-
-  async function sample() {
-    if (working) return;
-    const messages = [...ws.messages, { role: 'user' as const, text: starter }];
-    if (!await transmit()) return;
-    onMessages(messages);
-    setActivity(['Loading the sample campaign']);
-    try {
-      setProcessingPhase(1); setPhaseDetail('Reading the sample brief');
-      await hold(READ_DWELL);
-      setProcessingPhase(2); setPhaseDetail('Looking for details');
-      await hold(460);
-      await campaignService.sample(capture, FIELD_DWELL_SAMPLE);
-      setFeed(f => f.map(i => ({ ...i, state: 'done' as const })));
-      setPhaseDetail('Details mapped');
-      if (!inCanvas) await hold(SETTLE_DWELL);
-      setActiveField(null);
-      setProcessingPhase(3); setPhaseDetail('Checking scope and constraints');
-      await hold(640);
-      setProcessingPhase(4); setPhaseDetail('');
-      await hold(520);
-      if (!alive.current) return;
-      setProcessingPhase(3);
-      await wait(260);
-      if (!alive.current) return;
-      onMessages([...messages, { role: 'assistant', text: 'Sample campaign loaded. All eight details are captured, and every one is editable before the decisioning run.' }]);
-      onNotify('Sample brief captured. Review the details before generating.');
-    } finally {
-      if (alive.current) { setActiveField(null); await closeOut(); }
-    }
-  }
-
-  const typing = useRef(false);
-
-  /**
-   * End of run: the dialog collapses into a point of light, the canvas mounts
-   * behind it, and the light opens out. The view switches mid-bloom so the
-   * workspace is already settling when the light clears.
-   */
-  async function closeOut() {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setActiveField(null);
     setPhaseDetail('');
-    if (reduced || view !== 'landing') { setWorking(false); advance(); return; }
-    const style = (document.documentElement.dataset.handoff as HandoffStyle)
-      || (localStorage.getItem('spark-handoff') as HandoffStyle) || 'dissolve';
-    const t = HANDOFF_TIMING[style] ?? HANDOFF_TIMING.dissolve;
-    setHandoffStyle(style);
-    /* If anything is still missing, hold on the resolved diagram: the amber
-       branches routing to "your input required" are the point of that beat. */
-    const incomplete = briefFields.some(f => !briefRef.current[f.key]?.trim());
-    if (!incomplete) {
-      // everything landed: hold on the assembled diagram and offer the run
-      setReadyToRun(true);
-      await wait(2600);
-      if (!alive.current || !readyRef.current) return;
-      setReadyToRun(false);
-    } else {
-      await wait(1500);
-    }
-    if (!alive.current) return;
-    setCollapsing(true);
-    await wait(380);
-    if (!alive.current) return;
+    setProcessingPhase(0);
+    setFeed([]);
+    setActivity(['Receiving your message']);
+    return controller;
+  }
+
+  function stopCapture() {
+    operation.current?.abort();
+    operation.current = null;
+    setReadyToRun(false);
     setWorking(false);
-    setHandoff(true);
-    await wait(t.swap);
-    advance();
-    await wait(t.total - t.swap);
-    if (!alive.current) return;
-    setHandoff(false);
+    setActiveField(null);
+    setPhaseDetail('');
     setCollapsing(false);
   }
 
+  async function closeOut(controller: AbortController) {
+    setPhaseDetail('');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || inCanvas) {
+      stopCapture();
+      advance();
+      return;
+    }
+
+    const style = (localStorage.getItem('spark-handoff') as HandoffStyle) || 'dissolve';
+    const timing = HANDOFF_TIMING[style] ?? HANDOFF_TIMING.dissolve;
+    const brief = briefRef.current;
+    const canGenerate = briefFields.every(field => brief[field.key]?.trim())
+      && budgetValue(brief) !== null && brief.type === 'Repeat purchase'
+      && /partner\s*a/i.test(brief.partner || '');
+
+    setReadyToRun(canGenerate);
+    await hold(canGenerate ? 800 : 200);
+    if (controller.signal.aborted) return;
+    setReadyToRun(false);
+    setHandoffStyle(style);
+    setCollapsing(true);
+    setHandoff(true);
+    await wait(timing.swap);
+    if (controller.signal.aborted) return;
+    setWorking(false);
+    setCollapsing(false);
+    advance();
+    await wait(timing.total - timing.swap);
+    if (controller.signal.aborted) return;
+    setHandoff(false);
+    operation.current = null;
+  }
+
+  async function processMessage(text: string, loadSample = false) {
+    const value = text.trim();
+    if (!value) return;
+    const controller = beginCapture();
+    if (!controller) return;
+    const { signal } = controller;
+    const messages: Message[] = [...ws.messages, { role: 'user', text: value }];
+    const captureField = (key: BriefKey, entry: string) => {
+      if (!signal.aborted) capture(key, entry);
+    };
+
+    try {
+      await hold(opening ? PHASES[0].ms : 90);
+      if (signal.aborted) return;
+      setDraft('');
+      onMessages(messages);
+      const turn = classify(value);
+      setProcessingPhase(1);
+      setPhaseDetail(loadSample ? 'Reading the sample brief' : turn.kind === 'question'
+        ? 'Reading your question' : 'Reading for intent and entities');
+      await hold(inCanvas ? 90 : READ_DWELL);
+      if (signal.aborted) return;
+
+      const assumed = !loadSample && turn.kind === 'defer' && next ? assumptionFor(next.key) : undefined;
+      let answer: string;
+      if (!loadSample && turn.kind === 'question') {
+        answer = reply(turn, ws.brief);
+      } else if (assumed && next) {
+        captureField(next.key, assumed.value);
+        const following = campaignService.nextQuestion({ ...ws.brief, [next.key]: assumed.value });
+        answer = `I've assumed ${assumed.value} — ${assumed.because}. Change it on the right if that's wrong.${following ? `\n\n${following.prompt}` : ' That completes the brief.'}`;
+      } else {
+        setProcessingPhase(2);
+        setPhaseDetail('Looking for details');
+        const fieldDelay = pace(inCanvas ? 55 : loadSample ? FIELD_DWELL_SAMPLE : FIELD_DWELL);
+        let extracted = loadSample
+          ? await campaignService.sample(captureField, fieldDelay)
+          : await campaignService.extract(value, ws.brief, captureField, fieldDelay);
+        if (signal.aborted) return;
+
+        if (!loadSample && Object.keys(ws.brief).length && next
+          && !Object.keys(extracted).some(key => extracted[key as BriefKey] !== ws.brief[key as BriefKey])) {
+          captureField(next.key, value);
+          extracted = { ...extracted, [next.key]: value };
+        }
+        const question = campaignService.nextQuestion(extracted);
+        answer = loadSample
+          ? 'Sample campaign loaded. All eight details are captured, and every one is editable before the decisioning run.'
+          : question ? `I’ve updated the brief. ${question.prompt}`
+            : 'The brief is complete. Review the details, edit anything you need, then generate the recommendation.';
+      }
+
+      setActiveField(null);
+      setFeed(items => items.map(item => ({ ...item, state: 'done' })));
+      setProcessingPhase(3);
+      setPhaseDetail('Checking scope and constraints');
+      await hold(inCanvas ? 120 : PHASES[3].ms);
+      if (signal.aborted) return;
+      setProcessingPhase(4);
+      setPhaseDetail('');
+      await hold(inCanvas ? 90 : PHASES[4].ms);
+      if (signal.aborted) return;
+      onMessages([...messages, { role: 'assistant', text: answer }]);
+      if (loadSample && inCanvas) onNotify('Sample brief captured. Review the details before generating.');
+      await closeOut(controller);
+    } catch {
+      if (signal.aborted) return;
+      stopCapture();
+      setDraft(value);
+      onNotify('The brief could not be captured. You can try sending the message again.');
+    }
+  }
+
+  const send = (text = draft) => processMessage(text);
+  const sample = () => processMessage(starter, true);
+
   /** Selection pauses the channel, then visibly composes before transmission. */
   async function typeAndSend(scenario: LandingScenario) {
-    if (working || typing.current) return;
+    if (operation.current || typing.current || handoff) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { scenario.kind === 'sample' ? sample() : send(scenario.prompt); return; }
     typing.current = true;
@@ -318,18 +266,19 @@ export function BriefScreen({
     setSuggestionPhase('Selected · preparing the composer');
     setSuggesting(true);
     setDraft('');
-    await hold(520);
+    await hold(140);
     if (!alive.current) return;
     setSuggestionPhase('Writing your starting point');
-    for (let i = 2; i <= scenario.prompt.length + 1; i += 2) {
+    const chunkSize = Math.ceil(scenario.prompt.length / 12);
+    for (let i = chunkSize; i < scenario.prompt.length; i += chunkSize) {
       if (!alive.current) return;
       setDraft(scenario.prompt.slice(0, i));
-      await wait(19);
+      await hold(22);
     }
     if (!alive.current) return;
     setDraft(scenario.prompt);
     setSuggestionPhase('Ready · sending to the brief agent');
-    await hold(600);
+    await hold(110);
     if (!alive.current) return;
     typing.current = false;
     setSuggesting(false);
@@ -379,7 +328,7 @@ export function BriefScreen({
                   exit={{ opacity: 0, scale: 0.6 }}
                   transition={{ duration: 0.14, ease: ease.out }}
                 >
-                  {working ? <Loader2 className="animate-spin motion-keep" /> : <ArrowUp />}
+                  {working ? <FlybuysAgentMark active /> : <ArrowUp />}
                 </motion.span>
               </AnimatePresence>
             </Button>
@@ -392,9 +341,10 @@ export function BriefScreen({
   /* ---- shared pieces: used by both the console and the workbench ---- */
 
   /* ---------------- landing ---------------- */
-  if (opening) {
-    return (
-      <>
+  return (
+    <>
+      <Handoff active={handoff} style={handoffStyle} />
+      {opening ? <>
         <Landing
           brief={ws.brief}
           working={working}
@@ -417,36 +367,33 @@ export function BriefScreen({
           active={activeField}
           ready={readyToRun}
           onGenerate={() => {
-            readyRef.current = false;
-            setReadyToRun(false); setCollapsing(false); setWorking(false);
-            advance(); onGenerate();
+            stopCapture();
+            advance();
+            onGenerate();
           }}
-          onCancel={() => { alive.current = false; setWorking(false); setFeed([]); }}
+          onCancel={() => {
+            if (collapsing) return;
+            stopCapture();
+            setFeed([]);
+            if (readyToRun || ws.messages.length > 1 || captured > 0) advance();
+          }}
         />
-        <Handoff active={handoff} style={handoffStyle} />
-      </>
-    );
-  }
-
-  /* ---------------- workbench ---------------- */
-  return (
-    <>
-      <Handoff active={handoff} style={handoffStyle} />
+      </> : <>
       <motion.div
         className="workbench"
-        initial={{ opacity: 0, y: 18, scale: 0.985 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.52, ease: ease.signature }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: ease.signature }}
       >
         <motion.section
           className="chat-pane" data-tour="conversation"
           initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.46, ease: ease.signature, delay: 0.08 }}
+          transition={{ duration: 0.26, ease: ease.signature, delay: 0.025 }}
         >
           <div className="chat-head">
-            <h2><MessageSquareText />Brief agent</h2>
+            <h2><FlybuysAgentMark />Brief agent</h2>
             <Status tone={working ? 'blue' : 'neutral'}>
-              {working ? <><Loader2 size={12} className="animate-spin" />Thinking</> : <>Ready</>}
+              {working ? <><FlybuysAgentMark active />Thinking</> : <>Ready</>}
             </Status>
           </div>
           <Thread
@@ -467,7 +414,7 @@ export function BriefScreen({
         <motion.section
           className="board-wrap"
           initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.46, ease: ease.signature, delay: 0.16 }}
+          transition={{ duration: 0.26, ease: ease.signature, delay: 0.05 }}
         >
           <BriefPanel
             brief={ws.brief}
@@ -495,6 +442,7 @@ export function BriefScreen({
         <span><Check />Human decisions</span>
         <span>Read-only proof of concept</span>
       </div>
+      </>}
     </>
   );
 }

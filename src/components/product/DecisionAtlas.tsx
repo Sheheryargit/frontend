@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   ArrowRight, CircleAlert, Database, FileText, GitBranch, Layers3,
-  ShieldCheck, Sparkles, TriangleAlert, Users,
+  ShieldCheck, MousePointer2, TriangleAlert, Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -143,7 +143,7 @@ export function DecisionAtlas({
           </span>
           <h2>Follow the reasoning.</h2>
         </div>
-        <span className="atlas-hint"><Sparkles size={14} /> Select a stage to inspect it</span>
+        <span className="atlas-hint"><MousePointer2 size={14} /> Select a stage to inspect it</span>
       </div>
 
       {(() => {
@@ -203,9 +203,9 @@ export function DecisionAtlas({
                 onClick={() => setFocus(n.id)}
                 aria-pressed={focus === n.id}
                 aria-label={`${n.label}: ${nd.value} ${nd.unit ?? ''}`}
-                initial={{ opacity: 0, scale: still ? 1 : 0.8 }}
+                initial={{ opacity: still ? 1 : 0.64 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 320, damping: 26, delay: still ? 0 : i * 0.06 }}
+                transition={{ duration: still ? 0 : 0.2, ease: ease.out, delay: still ? 0 : i * 0.018 }}
                 whileHover={still ? {} : { scale: 1.04 }}
               >
                 <span className="atlas-node-core"><n.Icon size={19} strokeWidth={1.7} /></span>
@@ -214,7 +214,7 @@ export function DecisionAtlas({
                     className="atlas-node-alert" data-state={nd.state}
                     initial={{ scale: still ? 1 : 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 480, damping: 24, delay: still ? 0 : 0.3 + i * 0.06 }}
+                    transition={{ type: 'spring', stiffness: 480, damping: 24, delay: still ? 0 : 0.08 + i * 0.018 }}
                   >
                     {nd.state === 'bad' ? <CircleAlert /> : <TriangleAlert />}
                   </motion.span>

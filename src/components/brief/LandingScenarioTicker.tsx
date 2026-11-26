@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUpRight, Pause, Play, Radio } from 'lucide-react';
+import { ArrowUpRight, ClipboardList, MessageCircle, Pause, Play, Radio, Target } from 'lucide-react';
 import { landingScenarios } from './landingScenarios';
 import type { LandingScenario } from './landingScenarios';
 
@@ -33,7 +33,9 @@ export function LandingScenarioTicker({ selectedId, selectionPhase, onChoose }: 
           data-active={selectedId === scenario.id}
           disabled={Boolean(selectedId)}
           onClick={() => onChoose(scenario)}>
-          <span className="front-channel-kind">{scenario.kind === 'sample' ? 'SAMPLE' : scenario.kind === 'question' ? 'ASK' : 'SCENARIO'}</span>
+          <span className="front-channel-icon" aria-hidden="true">
+            {scenario.kind === 'sample' ? <ClipboardList size={16} /> : scenario.kind === 'question' ? <MessageCircle size={16} /> : <Target size={16} />}
+          </span>
           <span className="front-channel-copy"><strong>{scenario.label}</strong><small>{scenario.context}</small></span>
           <ArrowUpRight size={13}/>
         </button>)}

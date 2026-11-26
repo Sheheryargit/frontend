@@ -4,6 +4,7 @@ import { briefFields } from '../../data';
 import type { Brief, BriefKey } from '../../data';
 import { ease } from '../../lib/motion';
 import { DETAIL } from './details';
+import { FLYBUYS_WORDMARK } from '../product/FlybuysAgentMark';
 
 const W = 760, H = 330;
 const SRC = { x: 74, y: H / 2 };
@@ -118,8 +119,14 @@ export function ProcessingPipeline({ brief, active, captured, phaseIndex, collap
                 style={{ transformOrigin: `${SRC.x}px ${SRC.y}px` }} />
             </>
           )}
-          <circle cx={SRC.x} cy={SRC.y} r="17" fill="url(#ppipe-core)" />
-          {!still && <circle cx={SRC.x} cy={SRC.y} r="17" className="ppipe-src-ring" />}
+          <circle cx={SRC.x} cy={SRC.y} r="22" fill="url(#ppipe-core)" />
+          <image className="ppipe-wordmark" href={FLYBUYS_WORDMARK}
+            x={SRC.x - 17} y={SRC.y - 6} width="34" height="12" />
+          {!still && !collapsing && (
+            <circle cx={SRC.x} cy={SRC.y - 29} r="2.3" className="ppipe-agent-satellite"
+              style={{ transformOrigin: `${SRC.x}px ${SRC.y}px` }} />
+          )}
+          {!still && <circle cx={SRC.x} cy={SRC.y} r="22" className="ppipe-src-ring" />}
         </g>
 
         {/* assembled brief */}

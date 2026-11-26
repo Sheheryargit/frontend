@@ -1,7 +1,8 @@
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Check, PanelRight, Pencil, Sparkles, X } from 'lucide-react';
+import { Check, PanelRight, Pencil, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -116,7 +117,7 @@ export function CaptureConsole({
       <span className="pipe-filled">
         <span>{v}</span>
         <span className="pipe-origin">
-          {fieldOrigins[key] === 'edited' ? <><Pencil />edited</> : <><Sparkles />captured</>}
+          {fieldOrigins[key] === 'edited' ? <><Pencil />edited</> : <><FlybuysAgentMark />captured</>}
         </span>
       </span>
     );
@@ -139,7 +140,7 @@ export function CaptureConsole({
         </DialogDescription>
 
         <motion.header {...modalChoreography.content(0)} className="console-head">
-          <span className="console-orb" data-busy={working}><Sparkles /></span>
+          <FlybuysAgentMark size="avatar" active={working} />
           <div className="console-head-text">
             <strong>Brief agent</strong>
             <AnimatePresence mode="wait" initial={false}>
@@ -189,7 +190,7 @@ export function CaptureConsole({
             data-armed={valid && !working ? 'true' : undefined}
             className="generate-button"
           >
-            <Sparkles />Generate recommendation
+            <FlybuysAgentMark />Generate recommendation
           </Button>
         </motion.footer>
       </DialogContent>

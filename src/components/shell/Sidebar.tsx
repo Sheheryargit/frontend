@@ -1,9 +1,10 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
-  Check, CircleHelp, Database, FileText, LayoutGrid, Loader2, Search,
-  ShieldCheck, SlidersHorizontal, Sparkles,
+  Check, CircleHelp, Database, FileText, LayoutGrid, Search,
+  ShieldCheck, SlidersHorizontal,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { FLYBUYS_WORDMARK, FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { briefFields } from '../../data';
@@ -71,24 +72,13 @@ export function Sidebar({
   return (
     <aside className="rail">
       <div className="rail-top">
-        <span className="rail-logo"><Sparkles /></span>
+        <span className="rail-logo"><img src={FLYBUYS_WORDMARK} alt="Flybuys" /></span>
         <span className="rail-word">Spark<i>workspace</i></span>
       </div>
 
       {/* ---- what the agent is doing ---- */}
       <motion.div className="rail-agent" data-busy={busy || undefined} layout={!still}>
-        <span className="rail-agent-orb">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={busy ? 'busy' : 'idle'}
-              initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.6 }}
-              transition={{ type: 'spring', stiffness: 440, damping: 26 }}
-            >
-              {busy ? <Loader2 className="animate-spin motion-keep" /> : <Sparkles />}
-            </motion.span>
-          </AnimatePresence>
-          {busy && !still && <i className="rail-agent-ring" />}
-        </span>
+        <FlybuysAgentMark size="avatar" active={busy} />
         <span className="rail-agent-text">
           <AnimatePresence mode="wait" initial={false}>
             <motion.strong

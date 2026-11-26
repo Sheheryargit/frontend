@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ArrowUp, BrainCircuit, CircleHelp, Database, Sparkles } from 'lucide-react';
+import { ArrowUp, CircleHelp, Database } from 'lucide-react';
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -27,13 +28,13 @@ export function AskSpark({workspace:ws,onSelect,onSource}:{workspace:Workspace;o
   useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
   function ask(value:string){if(!value.trim()||phase)return;timers.current.forEach(clearTimeout);const q=value.trim();setDraft('');setAsked(q);setResult(null);setPhase('Tracing the decision');
     const p=still?70:850;timers.current=[setTimeout(()=>setPhase('Checking the evidence'),p),setTimeout(()=>{setResult(answer(q,ws));setPhase('');},p+(still?70:900))];}
-  return <><Button variant="outline" size="sm" className="ask-spark-trigger" onClick={()=>setOpen(true)}><Sparkles size={15}/>Ask Spark</Button>
+  return <><Button variant="outline" size="sm" className="ask-spark-trigger" onClick={()=>setOpen(true)}><FlybuysAgentMark />Ask Spark</Button>
     <Dialog open={open} onOpenChange={v=>{setOpen(v);if(!v){timers.current.forEach(clearTimeout);setPhase('');}}}><DialogContent className="ask-spark-dialog"><DialogHeader><span className="t-overline">DECISION ASSISTANT · LOCAL SIMULATION</span><DialogTitle>Challenge the recommendation</DialogTitle><DialogDescription>Ask why a direction was chosen, what changes with another choice, or which claims the evidence cannot support.</DialogDescription></DialogHeader>
       <div className="ask-spark-scene" aria-live="polite">
-        {!asked&&<div className="ask-spark-intro"><span><BrainCircuit size={22}/></span><strong>Start with a question</strong><p>Every answer traces the current scenario and its limitations.</p></div>}
+        {!asked&&<div className="ask-spark-intro"><FlybuysAgentMark size="orbit" /><strong>Start with a question</strong><p>Every answer traces the current scenario and its limitations.</p></div>}
         {asked&&<motion.div className="ask-spark-question" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}>{asked}</motion.div>}
-        <AnimatePresence mode="wait">{phase&&<motion.div key={phase} className="ask-spark-thinking" initial={{opacity:0,y:7}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-7}}><span className="ask-spark-orb"><Sparkles size={15}/></span><div><strong>{phase}</strong><small>Following audience, offer, and source links</small></div><i/><i/><i/></motion.div>}
-          {result&&!phase&&<motion.div key={asked+'answer'} className="ask-spark-answer" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}><div className="ask-spark-answer-label"><Sparkles size={14}/>SPARK ANALYSIS</div><p>{result.text}</p><div className="ask-spark-answer-actions">{result.action&&<Button size="sm" onClick={()=>{onSelect(result.action!.audienceId,result.action!.offerId,result.action!.level);setOpen(false);}}>{result.action.label}</Button>}{result.source&&<Button size="sm" variant="ghost" onClick={()=>{onSource(result.source!);setOpen(false);}}><Database size={14}/>Inspect source</Button>}</div></motion.div>}
+        <AnimatePresence mode="wait">{phase&&<motion.div key="thinking" className="ask-spark-thinking" initial={{opacity:0,y:7}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-7}}><FlybuysAgentMark size="avatar" active /><div><strong>{phase}</strong><small>Following audience, offer, and source links</small></div><i/><i/><i/></motion.div>}
+          {result&&!phase&&<motion.div key={asked+'answer'} className="ask-spark-answer" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}><div className="ask-spark-answer-label"><FlybuysAgentMark />SPARK ANALYSIS</div><p>{result.text}</p><div className="ask-spark-answer-actions">{result.action&&<Button size="sm" onClick={()=>{onSelect(result.action!.audienceId,result.action!.offerId,result.action!.level);setOpen(false);}}>{result.action.label}</Button>}{result.source&&<Button size="sm" variant="ghost" onClick={()=>{onSource(result.source!);setOpen(false);}}><Database size={14}/>Inspect source</Button>}</div></motion.div>}
         </AnimatePresence>
       </div>
       <div className="ask-spark-prompts">{prompts.map(p=><button key={p} onClick={()=>ask(p)} disabled={!!phase}>{p}</button>)}</div>

@@ -34,7 +34,7 @@ Keep feature state in its component until it must survive navigation or reload. 
 
 ## Styling order
 
-`styles.css` imports tokens and palettes, legacy compatibility, primitives, shell, feature layers, then the current dark visual identity in `control.css`, `discovery.css` and `landingTicker.css`. Later layers intentionally override earlier ones. Add feature CSS once in `styles.css`; use semantic variables instead of a second isolated theme.
+`styles.css` imports tokens and palettes, legacy compatibility, primitives, shell, feature layers, then scene layers in `control.css`, `discovery.css` and `landingTicker.css`, and finally the Flybuys brand contract in `flybuys.css`. Later layers intentionally override earlier ones. Add feature CSS once in `styles.css`; use semantic variables instead of a second isolated theme.
 
 ## Backend integration path
 
@@ -46,4 +46,4 @@ Keep feature state in its component until it must survive navigation or reload. 
 
 ## Current debt
 
-`styles/legacy.css` and `styles/compat.css` still support older areas. New work should use feature CSS and tokens. The default dark identity also has hardcoded values in `control.css`; consolidate those as a focused design-system change after visual review.
+`styles/legacy.css` and `styles/compat.css` still support older areas. New work should use feature CSS and tokens. Legacy scene colors now reference semantic `--fb-*` roles; `flybuys.css` owns their light and dark values. See root `design.me` for the visual contract.

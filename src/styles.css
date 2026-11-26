@@ -1,5 +1,5 @@
 /* Spark — stylesheet entry. Imports must precede all rules. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400..600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400..600&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -24,6 +24,7 @@
 @import './styles/control.css';
 @import './styles/discovery.css';
 @import './styles/landingTicker.css';
+@import './styles/flybuys.css';
 
 
 @custom-variant dark (&:is(.dark *));

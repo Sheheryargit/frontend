@@ -1,6 +1,7 @@
+import { FlybuysAgentMark } from '../product/FlybuysAgentMark';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ArrowLeft, Check, Info, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Info, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -147,7 +148,7 @@ export function DetailEditor({ field, brief, onCommit, onClose }: Props) {
 
       {suggestion && (
         <button className="editor-suggest" onClick={suggest} disabled={filling}>
-          <Sparkles />
+          <FlybuysAgentMark />
           {filling ? 'Filling…' : 'Let the agent suggest a value'}
         </button>
       )}
