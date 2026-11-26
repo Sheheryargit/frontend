@@ -107,7 +107,7 @@ h1,h2,h3,.front-greeting,.atlas-header h2,.dark .screen-title-row h1 { font-fami
 }
 .atlas::before { mask-image:linear-gradient(90deg,#000,transparent); }
 .atlas-grid { mask-image:radial-gradient(ellipse,#000,transparent 85%); }
-.scenario-chart,.ask-spark-scene,.dark .console-pipe,.processing-pipeline {
+.scenario-chart,.dark .console-pipe,.processing-pipeline {
   background-image:var(--fb-dot-field);background-size:var(--fb-dot-size);background-color:var(--surface-inset);
 }
 .atlas,.rec-summary,.scenario-lab,.evidence-passport,.review-intelligence,.rev-spec {
@@ -158,9 +158,9 @@ h1,h2,h3,.front-greeting,.atlas-header h2,.dark .screen-title-row h1 { font-fami
 .rail-agent { background:var(--fb-panel);box-shadow:var(--fb-inset); }
 .rail-agent[data-busy] { background:var(--a-1);box-shadow:inset 2px 0 var(--a-4),var(--fb-inset); }
 .scenario-point.selected { filter:drop-shadow(0 0 7px color-mix(in srgb,var(--a-4) 50%,transparent)); }
-.ask-spark-orb,.processing-ring { filter:drop-shadow(0 0 9px color-mix(in srgb,var(--a-4) 18%,transparent)); }
+.processing-ring { filter:drop-shadow(0 0 9px color-mix(in srgb,var(--a-4) 18%,transparent)); }
 @keyframes fb-node-breathe { 0%,100% { opacity:.5;transform:scale(.97); } 50% { opacity:1;transform:scale(1.04); } }
-@media(prefers-reduced-motion:reduce) { .atlas-node--focused .atlas-node-core::after { animation:none; }.processing-ring,.ask-spark-orb { filter:none; } }
+@media(prefers-reduced-motion:reduce) { .atlas-node--focused .atlas-node-core::after { animation:none; }.processing-ring { filter:none; } }
 
 /* Landing and agent surfaces share the same focus colors and dot field. */
 .front {
@@ -472,11 +472,6 @@ h1,h2,h3,.front-greeting,.atlas-header h2,.dark .screen-title-row h1 { font-fami
   fill: var(--a-6);
   filter: drop-shadow(0 0 3px var(--a-4));
   animation: flybuys-agent-orbit 1.65s linear infinite;
-}
-
-.ask-spark-intro > .flybuys-agent-mark--orbit {
-  width: 48px;
-  height: 48px;
 }
 
 @keyframes flybuys-agent-orbit {

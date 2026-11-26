@@ -25,6 +25,7 @@
 @import './styles/discovery.css';
 @import './styles/landingTicker.css';
 @import './styles/flybuys.css';
+@import './styles/askSpark.css';
 
 
 @custom-variant dark (&:is(.dark *));

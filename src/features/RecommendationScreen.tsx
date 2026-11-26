@@ -93,22 +93,18 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
     setSort(s => ({ key, dir: s.key === key ? -s.dir : -1 }));
 
   return (
-    <div className="rec">
+    <div className="rec rec-layout">
+      <div className="rec-assistant-rail">
+        <AskSpark key={ws.revision} workspace={ws} onSelect={selectWithPulse} onSource={onSource} />
+      </div>
+
+      <div className="rec-main">
       {stale && (
         <Notice tone="warning">
           <strong>The brief has changed</strong>
           <p>Estimates reflect your edits, but a new decisioning run is needed before acceptance.</p>
         </Notice>
       )}
-
-      <DecisionAtlas
-        workspace={ws}
-        mode="explore"
-        canAccept={canAccept}
-        onSelect={selectWithPulse}
-        onSource={onSource}
-        onReview={onReview}
-      />
 
       {/* ---- the recommendation ---- */}
       <motion.section
@@ -122,13 +118,17 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
             <h2>{a.name} <i>·</i> {o.name}</h2>
             <p>{LEVELS[ws.level]} criteria. {a.description} {o.rationale}</p>
           </div>
-          <AskSpark workspace={ws} onSelect={selectWithPulse} onSource={onSource}/>
         </div>
 
         <div className="rec-viability" data-fit={r.fit==='within'&&r.size>=minimum&&r.evidence!=='insufficient'?'viable':'attention'}>
           <span>{r.fit==='within'&&r.size>=minimum&&r.evidence!=='insufficient'?'VIABLE WORKING DIRECTION':'CONSTRAINT NEEDS REVIEW'}</span>
           <strong>{r.size>=minimum?`${number(r.size)} members clear the ${number(minimum)} demo floor`:`Audience below the ${number(minimum)} demo floor`}</strong>
-          <button onClick={()=>setTab('compare')}>Explore trade-offs</button>
+          <button onClick={() => {
+            setTab('compare');
+            document.getElementById('recommendation-exploration')?.scrollIntoView({
+              block: 'start', behavior: still ? 'instant' : 'smooth',
+            });
+          }}>Explore trade-offs</button>
         </div>
         <AnimatePresence initial={false}>{pulse&&<motion.div className="selection-signal" role="status" initial={{opacity:0,height:0}} animate={{opacity:1,height:34}} exit={{opacity:0,height:0}} transition={{duration:.28}}><i/><span>{pulse}</span><b/></motion.div>}</AnimatePresence>
 
@@ -167,8 +167,17 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
         </div>
       </motion.section>
 
+      <DecisionAtlas
+        workspace={ws}
+        mode="explore"
+        canAccept={canAccept}
+        onSelect={selectWithPulse}
+        onSource={onSource}
+        onReview={onReview}
+      />
+
       {/* ---- explore ---- */}
-      <Tabs value={tab} onValueChange={setTab} className="rec-tabs" data-tour="exploration">
+      <Tabs value={tab} onValueChange={setTab} className="rec-tabs" id="recommendation-exploration" data-tour="exploration">
         <div className="rec-tabbar">
           <TabsList variant="line">
             <TabsTrigger value="choose">Audience &amp; offer</TabsTrigger>
@@ -264,6 +273,8 @@ export function RecommendationScreen({ workspace: ws, canAccept, onSelect, onSou
           </div>
         </TabsContent>
       </Tabs>
+
+      </div>
 
       <Dialog open={record !== null} onOpenChange={open => { if (!open) setRecord(null); }}>
         <DialogContent>

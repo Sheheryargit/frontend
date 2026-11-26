@@ -1,0 +1,230 @@
+.rec-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 18px;
+  container-type: inline-size;
+}
+
+.rec-main > .atlas { margin-bottom: 0; }
+.rec-assistant-rail { min-width: 0; }
+
+.spark-assistant {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in srgb, var(--a-4) 38%, var(--line));
+  border-radius: var(--r-xl);
+  background: var(--surface-card);
+  box-shadow: 0 5px 28px color-mix(in srgb, var(--a-4) 10%, transparent), var(--elev-2);
+}
+
+.spark-assistant-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 82px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line);
+  border-radius: calc(var(--r-xl) - 1px) calc(var(--r-xl) - 1px) 0 0;
+  background:
+    var(--fb-dot-field) 0 0 / 14px 14px,
+    radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--a-4) 17%, var(--surface-inset)), var(--surface-inset) 78%);
+}
+
+.spark-assistant-head > .flybuys-agent-mark {
+  box-shadow: var(--fb-inset), 0 0 0 4px color-mix(in srgb, var(--a-4) 9%, transparent);
+}
+
+.spark-assistant-head h2 {
+  font-size: 1.125rem;
+  font-weight: 680;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+
+.spark-assistant-head p,
+.spark-assistant-scope {
+  color: var(--ink-muted);
+  font-size: .6875rem;
+  line-height: 1.3;
+}
+
+.spark-assistant-scope {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-full);
+  background: var(--surface-card);
+  color: var(--a-6);
+  white-space: nowrap;
+}
+
+.spark-assistant-intro { padding: 15px 14px 13px; }
+
+.spark-assistant-intro > p {
+  max-width: 45ch;
+  margin-bottom: 12px;
+  color: var(--ink-muted);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+.spark-assistant-prompts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.spark-assistant-prompts button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 48px;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-size: .6875rem;
+  font-weight: 570;
+  line-height: 1.25;
+  text-align: left;
+  transition: border-color .16s var(--ease), background-color .16s var(--ease);
+}
+
+.spark-assistant-prompts button svg { color: var(--a-6); }
+.spark-assistant-prompts button svg:last-child { margin-left: auto; }
+.spark-assistant-prompts button:hover { border-color: var(--a-4); background: var(--a-1); }
+
+.spark-assistant-stream {
+  min-height: 165px;
+  max-height: clamp(168px, 46dvh, 470px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  padding: 13px 14px;
+}
+
+.spark-assistant-turn { display: grid; gap: 9px; margin-bottom: 14px; }
+.spark-assistant-turn:last-child { margin-bottom: 0; }
+
+.spark-assistant-question {
+  justify-self: end;
+  max-width: 91%;
+  padding: 8px 10px;
+  border-radius: var(--r-lg) var(--r-lg) 3px var(--r-lg);
+  background: var(--a-1);
+  color: var(--ink);
+  font-size: .75rem;
+  overflow-wrap: anywhere;
+}
+
+.spark-assistant-answer {
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 3px var(--r-lg) var(--r-lg) var(--r-lg);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+.spark-assistant-context { display: block; margin-top: 8px; color: var(--ink-muted); }
+.spark-assistant-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.spark-assistant-actions > button { max-width: 100%; height: auto; min-height: 30px; white-space: normal; font-size: .6875rem; }
+
+.spark-assistant-activity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  color: var(--ink-muted);
+  font-size: .75rem;
+}
+
+.spark-assistant-form {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  margin: 0 14px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface-card);
+}
+
+.spark-assistant-form:focus-within {
+  border-color: var(--a-4);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--a-4) 13%, transparent);
+}
+
+.spark-assistant-form input[data-slot="input"] {
+  min-width: 0;
+  min-height: 33px;
+  padding: 5px 7px;
+  border: 0;
+  background: transparent;
+  font-size: .8125rem;
+  box-shadow: none;
+}
+
+.spark-assistant-jump[data-slot="button"] {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 21;
+  height: 42px;
+  border-radius: var(--r-full);
+  padding: 0 15px;
+  box-shadow: var(--elev-3);
+}
+
+@media (min-width: 1180px) {
+  .rec.rec-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(288px, 25vw, 332px);
+    grid-template-areas: "recommendation assistant";
+    align-items: start;
+  }
+
+  .rec-main { grid-area: recommendation; }
+
+  .rec-assistant-rail {
+    grid-area: assistant;
+    position: sticky;
+    top: calc(var(--h-header) + 18px);
+  }
+
+  .spark-assistant-jump[data-slot="button"] { display: none; }
+}
+
+@media (max-width: 1179px) {
+  .rec.rec-layout { padding-bottom: 48px; }
+}
+
+@media (max-width: 520px) {
+  .spark-assistant-head { flex-wrap: wrap; }
+  .spark-assistant-scope { margin-left: 0; }
+}
+
+@container (width < 920px) {
+  .rec-main .rec-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rec-main .atlas--live .atlas-body { grid-template-columns: minmax(0, 1fr); }
+  .rec-main .atlas--live .atlas-network { min-height: 345px; }
+  .rec-main .atlas-inspector { border-left: 0; border-top: 1px solid var(--line); }
+}
+
+@container (width < 720px) {
+  .rec-main .rec-meters, .rec-main .picker { grid-template-columns: minmax(0, 1fr); }
+  .rec-main .rec-viability { flex-wrap: wrap; }
+}
+
+@container (width < 430px) {
+  .rec-main .rec-stats { grid-template-columns: minmax(0, 1fr); }
+}
+
+.rec-main .rec-tabs { scroll-margin-top: calc(var(--h-header) + 18px); }
